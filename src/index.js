@@ -100,7 +100,7 @@ const dataLayer1 = fromJS({
     // 'circle-radius': ['-', 2017, ['number', ['get', 'Constructi'], 2017]],
     "fill-opacity": ["case",
     // ["feature-state", "hover"]
-        ["boolean", ["==", ['get', 'tz_name1st'], "placehodler_tz_name1st"]],
+        ["boolean", ["==", ['get', 'objectid'], "placehodler_objectid"]],
         // ["boolean", ["feature-state", "hover"], false],
           0.6,
           0.15
@@ -160,12 +160,13 @@ export default class extends Component {
     const hoveredFeature = features && features.find(f => f.layer.id === 'geojson-polygon-fill');
     const countryFeature = features && features.find(f => f.layer.id === 'admin_country');
     // console.log(defaultMapStyle, defaultMapStyle.get(['layers', highlightLayerIndex, 'paint', 'fill-opacity']));
+    // console.log(hoveredFeature);
     this.setState({
       hoveredFeature,
       countryFeature,
       x: offsetX,
       y: offsetY,
-      mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tz_name1st),
+      mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.objectid),
     });
   };
 
@@ -208,7 +209,7 @@ export default class extends Component {
     const { mapStyle } = this.state;
     const viewState = {
       longitude: 0,
-      latitude: 50,
+      latitude: 70,
       zoom: 2,
       pitch: 0,
       bearing: 0
@@ -286,8 +287,8 @@ export default class extends Component {
     return (
       <InteractiveMap
         mapStyle={mapStyle}
-        width={1100}
-        height={700}
+        width={1000}
+        height={800}
         onHover={this._onHover}
         { ...viewport }
 
