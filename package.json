@@ -19,7 +19,12 @@
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server"
   },
-  "dependencies": {},
+  "dependencies": {
+    "d3-scale": "^2.1.2",
+    "deck.gl": "^6.1.0",
+    "immutable": "^3.8.2",
+    "react-map-gl": "^3.3.4"
+  },
   "peerDependencies": {
     "react": "16.x"
   },
