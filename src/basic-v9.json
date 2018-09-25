@@ -643,7 +643,7 @@
             "case",
               ["boolean", ["==", ["get", "objectid"], "placehodler_objectid"]],
                 0.6,
-                0.3
+                0.15
             ]
         },
         "interactive": true
