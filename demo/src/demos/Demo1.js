@@ -58,6 +58,14 @@ class Demo1 extends React.Component {
 
   handleChange = value => this.setState({ selectTimezone: value })
 
+  handleTimezoneClick = (event, timezoneName) => {
+    // console.log(values);
+    this.setState({ selectTimezone: {
+      label: timezoneName,
+      value: timezoneName
+    } })
+  }
+
   render() {
     const { classes } = this.props;
     const { open, selectTimezone } = this.state;
@@ -76,8 +84,9 @@ class Demo1 extends React.Component {
 
           <Paper elevation={6} className={classes.paper}>
             <ReactMapGLTimezone
-              // selectTimezone={selectTimezone && selectTimezone.value}
+              selectTimezone={selectTimezone && selectTimezone.value}
               mapboxApiAccessToken="pk.eyJ1IjoiamVvbmdzZCIsImEiOiI2N2EwZjRjZmI5ZjI2OGFiZGVjYTczZTE1NDE4MzEyNyJ9.8TAcw2tyxePaN5zqql8GUA"
+              onTimezoneClick={this.handleTimezoneClick}
             />
           </Paper>
         </div>

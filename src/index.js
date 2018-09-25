@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
 import { fromJS } from 'immutable';
-import { InteractiveMap } from 'react-map-gl';
+import MapGL, { Marker } from 'react-map-gl';
 // import {InteractiveMap} from 'react-map-gl';
 import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
 import ts from '@mapbox/timespace';
 import { scaleThreshold } from 'd3-scale';
-import timezoneMeta from 'moment-timezone/data/meta/latest.json'
+import momentTimezone from 'moment-timezone/data/meta/latest.json'
 // import timezone from './timezone.json';
-
+import TimezoneMarkIcon from './TimezoneMarkIcon';
 import MAP_STYLE from './basic-v9.json';
 import timezone2 from './test.json';
 // import bart from './bart.geo.json';
@@ -56,7 +56,14 @@ export default class extends Component {
   };
 
   handleClick = (event) => {
-    console.log(event.features);
+    const { onTimezoneClick } = this.props;
+    // const hoverFeature = event.features && event.features.find(f => f.layer.id === 'timezone-fill');
+    const time = ts.getFuzzyLocalTimeFromPoint(Date.now(), event.lngLat);
+    if (onTimezoneClick && time) onTimezoneClick(event, time.tz())
+
+
+    //
+    // console.log(event.features);
   }
 
   _renderTooltip() {
@@ -80,23 +87,40 @@ export default class extends Component {
       )
     );
   }
-  // "geometry": null,
+
+  renderMaker() {
+    const { selectTimezone } = this.props;
+    const timezoneMeta = selectTimezone && momentTimezone.zones[selectTimezone];
+    if (!timezoneMeta) return null;
+    return (
+      <Marker
+        longitude={timezoneMeta.long}
+        latitude={timezoneMeta.lat}
+      >
+        <TimezoneMarkIcon />
+        {/* <CityPin size={20} onClick={() => this.setState({popupInfo: city})} /> */}
+      </Marker>
+    );
+  }
 
   render() {
     // const {viewState, controller = true, baseMap = true} = this.props;
-    const { mapboxApiAccessToken } = this.props;
+    const { mapboxApiAccessToken, selectTimezone } = this.props;
     const { mapStyle } = this.state;
 
     const viewport =  {
-      latitude: 30,
+      latitude: -20,
       longitude: 0,
       zoom: 1,
       bearing: 0,
       pitch: 0
     };
 
+
+    // timezoneMeta
+
     return (
-      <InteractiveMap
+      <MapGL
         mapStyle={mapStyle}
         width={1030}
         height={750}
@@ -107,7 +131,8 @@ export default class extends Component {
         preventStyleDiffing={ false }
       >
         {this._renderTooltip()}
-      </InteractiveMap>
+        {this.renderMaker()}
+      </MapGL>
     );
   }
 }
