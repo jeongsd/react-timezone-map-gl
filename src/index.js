@@ -5,6 +5,8 @@ import { InteractiveMap } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
 import ts from '@mapbox/timespace';
 import { scaleThreshold } from 'd3-scale';
+import { tileToGeoJSON } from '@mapbox/tilebelt';
+import timezoneMeta from 'moment-timezone/data/meta/latest.json'
 // import timezone from './timezone.json';
 
 import MAP_STYLE from './basic-v9.json';
@@ -16,7 +18,7 @@ import timezone2 from './test.json';
 
 let defaultMapStyle = fromJS(MAP_STYLE);
 
-
+// "219/98/8":"Asia/Seoul","216/99/8":"Asia/Seoul","217/99/8":"Asia/Seoul","165/108/8"
 export const COLOR_SCALE = scaleThreshold()
   .domain([-0.6, -0.45, -0.3, -0.15, 0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2])
   .range([
@@ -58,8 +60,115 @@ const MAP_COLOR = [
   [63,81,181, 70]
 ]
 
+
 defaultMapStyle = defaultMapStyle
   .setIn(['sources', 'timezone-source'], fromJS({type: 'geojson', data: timezone2 }))
+
+defaultMapStyle = defaultMapStyle
+  .setIn(
+    ['sources', 'timezone-select'],
+    fromJS({
+      type: 'geojson',
+      data: {
+          "type": "FeatureCollection",
+          "features": [{
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                 [
+                  [
+                    127.96875,
+                    37.71859032558813
+                   ],
+                   [
+                    127.96875,
+                    38.82259097617712
+                   ],
+                   [
+                    129.375,
+                    38.82259097617712
+                   ],
+                   [
+                    129.375,
+                    37.71859032558813
+                   ],
+                   [
+                    127.96875,
+                    37.71859032558813
+                   ]
+                 ]
+                ]
+               }
+          }, {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+               [
+                [
+                  123.75,
+                  37.71859032558813
+                 ],
+                 [
+                  123.75,
+                  38.82259097617712
+                 ],
+                 [
+                  125.15625,
+                  38.82259097617712
+                 ],
+                 [
+                  125.15625,
+                  37.71859032558813
+                 ],
+                 [
+                  123.75,
+                  37.71859032558813
+                 ]
+               ]
+              ]
+             }
+        }, {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+             [
+              [
+                125.15625,
+                37.71859032558813
+               ],
+               [
+                125.15625,
+                38.82259097617712
+               ],
+               [
+                126.5625,
+                38.82259097617712
+               ],
+               [
+                126.5625,
+                37.71859032558813
+               ],
+               [
+                125.15625,
+                37.71859032558813
+               ]
+             ]
+            ]
+           }
+      }]
+      }
+   })
+  )
+
+
+
+
 
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
 
@@ -113,7 +222,7 @@ export default class extends Component {
     // var timestamp = ;
     if(!hoveredFeature && !lngLat) return null;
     var time = ts.getFuzzyLocalTimeFromPoint(Date.now(), lngLat);
-    console.log(hoveredFeature.properties.tz_name1st)
+    // console.log(hoveredFeature.properties.tz_name1st)
     return (
       hoveredFeature && (
         <div className="tooltip" style={{top: y, left: x}}>
@@ -194,11 +303,27 @@ export default class extends Component {
       pitch: 0
     };
 
+    // // "219/98/8":"Asia/Seoul","216/99/8":"Asia/Seoul","217/99/8":"Asia/Seoul","165/108/8"
+    // console.log(tileToGeoJSON([219, 98, 8]))
+    // console.log(tileToGeoJSON([216, 99, 8]))
+    // console.log(tileToGeoJSON([217, 99, 8]))
+
+    // var mergedGeoJSON = geojsonMerge.merge([
+
+    // ]);
+
+    // console.log(
+    //   JSON.stringify(tileToGeoJSON([219, 98, 8]), null, ' '),
+    //   JSON.stringify(tileToGeoJSON([216, 98, 8]), null, ' '),
+    //   JSON.stringify(tileToGeoJSON([217, 98, 8]), null, ' ')
+    // )
+
+    // console.log(this.state.lngLat)
     return (
       <InteractiveMap
         mapStyle={mapStyle}
         width={1030}
-        height={800}
+        height={750}
         onHover={this._onHover}
         onClick={this.handleClick}
         { ...viewport }
@@ -210,3 +335,4 @@ export default class extends Component {
     );
   }
 }
+126.91406249999946, 44.2365728743725

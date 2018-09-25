@@ -1,5 +1,5 @@
 .tooltip {
-  position: fixed;
+  position: absolute;
   padding: 4px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
@@ -7,5 +7,4 @@
   font-size: 10px;
   z-index: 10;
   pointer-events: none;
-  transform: translate(0, 100%);
 }
