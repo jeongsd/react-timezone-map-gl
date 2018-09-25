@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import withRoot from '../withRoot';
 import Demo1 from '../demos/Demo1';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const styles = theme => ({
   root: {

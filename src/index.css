@@ -8,3 +8,11 @@
   z-index: 10;
   pointer-events: none;
 }
+
+
+.navigationControlWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
