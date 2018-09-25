@@ -6,7 +6,7 @@ import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
 import {scaleThreshold} from 'd3-scale';
 // import timezone from './timezone.json';
 
-import MAP_STYLE from './map-style-basic-v8.json';
+import MAP_STYLE from './basic-v9.json';
 import timezone2 from './test.json';
 // import bart from './bart.geo.json';
 
@@ -103,7 +103,7 @@ const dataLayer1 = fromJS({
         ["boolean", ["==", ['get', 'objectid'], "placehodler_objectid"]],
         // ["boolean", ["feature-state", "hover"], false],
           0.6,
-          0.15
+          0.3
       ]
 
   },
@@ -170,6 +170,9 @@ export default class extends Component {
     });
   };
 
+  handleClick = (event) => {
+    console.log(event.features);
+  }
 
   _renderTooltip() {
     const { x, y, hoveredFeature, countryFeature } = this.state;
@@ -210,7 +213,7 @@ export default class extends Component {
     const viewState = {
       longitude: 0,
       latitude: 70,
-      zoom: 2,
+      zoom: 1,
       pitch: 0,
       bearing: 0
     };
@@ -287,9 +290,10 @@ export default class extends Component {
     return (
       <InteractiveMap
         mapStyle={mapStyle}
-        width={1000}
+        width={1030}
         height={800}
         onHover={this._onHover}
+        onClick={this.handleClick}
         { ...viewport }
 
         // onViewportChange={ this._onViewportChange }
