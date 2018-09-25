@@ -3,7 +3,8 @@ import { fromJS } from 'immutable';
 import { InteractiveMap } from 'react-map-gl';
 // import {InteractiveMap} from 'react-map-gl';
 import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
-import {scaleThreshold} from 'd3-scale';
+import ts from '@mapbox/timespace';
+import { scaleThreshold } from 'd3-scale';
 // import timezone from './timezone.json';
 
 import MAP_STYLE from './basic-v9.json';
@@ -35,14 +36,6 @@ export const COLOR_SCALE = scaleThreshold()
     [128, 0, 38]
   ]);
 
-const LIGHT_SETTINGS = {
-  lightsPosition: [-125, 50.5, 5000, -122.8, 48.5, 8000],
-  ambientRatio: 0.2,
-  diffuseRatio: 0.5,
-  specularRatio: 0.3,
-  lightsStrength: [1.0, 0.0, 2.0, 0.0],
-  numberOfLights: 2
-};
 
 export const INITIAL_VIEW_STATE = {
   latitude: 49.254,
@@ -64,72 +57,11 @@ const MAP_COLOR = [
   [121,85,72, 70],
   [63,81,181, 70]
 ]
-// map_color8
-
-const dataLayer1 = fromJS({
-  id: 'geojson-polygon-fill',
-  source: 'my-geojson-polygon-source',
-  type: 'fill',
-  paint: {
-    // "fill-color": 'white'
-    "fill-color": {
-      "property": "map_color6",
-      "stops": [
-          // zoom is 0 and "rating" is 0 -> circle radius will be 0px
-          [1, '#3288bd'],
-          [2, '#ffffbf'],
-          [3, '#66c2a5'],
-
-          // [3, '#e6f598'],
-
-          // [5, '#fee08b'],
-          [4, '#fdae61'],
-          [5, '#abdda4'],
-          // [5, '#f46d43'],
-          [6, '#d53e4f'],
-      ]
-    },
-    // 'fill-color': 'red',
-    // 'fill-opacity': 0.4,
-    // ["==", "class", "street_limited"],
-    // "fill-opacity": ["==", 'tz_name1st', "Asia/Dhaka"
-    //     // ["boolean", ["feature-state", "hover"], false],
-    //     //   0.5,
-    //     //   0.2
-    // ],
-    // 'circle-radius': ['-', 2017, ['number', ['get', 'Constructi'], 2017]],
-    "fill-opacity": ["case",
-    // ["feature-state", "hover"]
-        ["boolean", ["==", ['get', 'objectid'], "placehodler_objectid"]],
-        // ["boolean", ["feature-state", "hover"], false],
-          0.6,
-          0.3
-      ]
-
-  },
-  interactive: true
-});
-
-
-// fill-color
-
-
-
-const dataLayer2 = fromJS({
-  id: 'geojson-polygon-stroke',
-  source: 'my-geojson-polygon-source',
-  type: 'line',
-  paint: {'line-color': '#81452E', 'line-width': 1},
-  interactive: false
-});
-
 
 defaultMapStyle = defaultMapStyle
-  .setIn(['sources', 'my-geojson-polygon-source'], fromJS({type: 'geojson', data: timezone2 }))
-  .set('layers', defaultMapStyle.get('layers').push(dataLayer1))
-defaultMapStyle = defaultMapStyle.set('layers', defaultMapStyle.get('layers').push(dataLayer2));
+  .setIn(['sources', 'timezone-source'], fromJS({type: 'geojson', data: timezone2 }))
 
-export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'geojson-polygon-fill')
+export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
 
 export default class extends Component {
   constructor(props) {
@@ -137,6 +69,7 @@ export default class extends Component {
 
     this.state = {
       hoveredFeature: null,
+      lngLat: null,
       mapStyle: defaultMapStyle,
     };
     this._onHover = this._onHover.bind(this);
@@ -155,15 +88,13 @@ export default class extends Component {
   }
 
   _onHover = event => {
-    const {features, srcEvent: {offsetX, offsetY}} = event;
-    // console.log(features);
-    const hoveredFeature = features && features.find(f => f.layer.id === 'geojson-polygon-fill');
+    const { features, lngLat, srcEvent: { offsetX, offsetY }} = event;
+
+    const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-fill');
     const countryFeature = features && features.find(f => f.layer.id === 'admin_country');
-    // console.log(defaultMapStyle, defaultMapStyle.get(['layers', highlightLayerIndex, 'paint', 'fill-opacity']));
-    // console.log(hoveredFeature);
     this.setState({
       hoveredFeature,
-      countryFeature,
+      lngLat,
       x: offsetX,
       y: offsetY,
       mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.objectid),
@@ -175,13 +106,19 @@ export default class extends Component {
   }
 
   _renderTooltip() {
-    const { x, y, hoveredFeature, countryFeature } = this.state;
+    const { x, y, hoveredFeature, lngLat } = this.state;
+    // console.log(defaultMapStyle, defaultMapStyle.get(['layers', highlightLayerIndex, 'paint', 'fill-opacity']));
+    // console.log(hoveredFeature);
     // console.log(countryFeature);
+    // var timestamp = ;
+    if(!hoveredFeature && !lngLat) return null;
+    var time = ts.getFuzzyLocalTimeFromPoint(Date.now(), lngLat);
+    console.log(hoveredFeature.properties.tz_name1st)
     return (
       hoveredFeature && (
         <div className="tooltip" style={{top: y, left: x}}>
           <p>
-            {hoveredFeature.properties.tz_name1st}
+            {(time && time.tz()) || hoveredFeature.properties.tz_name1st}
           </p>
           <p>
             {hoveredFeature.properties.utc_format}
@@ -257,36 +194,6 @@ export default class extends Component {
       pitch: 0
     };
 
-
-    // const mapStyle = {
-    //   version: 8,
-    //   name: 'Example raster tile source',
-    //   sources: {
-    //     'my-geojson-polygon-source': {
-    //       type: 'geojson',
-    //       data: timezone2
-    //     }
-    //   },
-    //   layers: [
-    //     {
-    //       id: 'geojson-polygon-fill',
-    //       source: 'my-geojson-polygon-source',
-    //       type: 'fill',
-    //       paint: {
-    //         'fill-color': 'white',
-    //         'fill-opacity': 0.1
-    //       },
-    //       interactive: true
-    //     }, {
-    //       id: 'geojson-polygon-stroke',
-    //       source: 'my-geojson-polygon-source',
-    //       type: 'line',
-    //       paint: {'line-color': 'black', 'line-width': 1},
-    //       interactive: false
-    //     }
-    //   ]
-    // }
-
     return (
       <InteractiveMap
         mapStyle={mapStyle}
@@ -295,42 +202,11 @@ export default class extends Component {
         onHover={this._onHover}
         onClick={this.handleClick}
         { ...viewport }
-
-        // onViewportChange={ this._onViewportChange }
-        // onClick={ this._onClickFeatures }
         mapboxApiAccessToken={mapboxApiAccessToken}
         preventStyleDiffing={ false }
       >
         {this._renderTooltip()}
       </InteractiveMap>
-      // <DeckGL
-      //   width={1000}
-      //   height={800}
-      //   viewState={viewState} layers={layers} controller>
-      //   {/* <StaticMap
-      //     reuseMaps
-      //     // mapStyle="mapbox://styles/mapbox/light-v9"
-      //     // preventStyleDiffing={true}
-      //     mapboxApiAccessToken={mapboxApiAccessToken}
-      //   /> */}
-      // </DeckGL>
-      // <DeckGL
-      //   layers={this._renderLayers()}
-      //   initialViewState={INITIAL_VIEW_STATE}
-      //   viewState={viewState}
-      //   controller={controller}
-      // >
-      //   {baseMap && (
-      //     <StaticMap
-      //       reuseMaps
-      //       mapStyle="mapbox://styles/mapbox/light-v9"
-      //       preventStyleDiffing={true}
-      //       mapboxApiAccessToken={mapboxApiAccessToken}
-      //     />
-      //   )}
-
-      //   {this._renderTooltip}
-      // </DeckGL>
     );
   }
 }

@@ -65,6 +65,30 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@mapbox/shelf-pack/-/shelf-pack-3.2.0.tgz#df3630ecce8c042817c9a365b88078412963de64"
 
+"@mapbox/tile-cover@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@mapbox/tile-cover/-/tile-cover-3.0.2.tgz#e10b1bbfe65ee28a7f1a0127deb699635d0f8d7a"
+  dependencies:
+    "@mapbox/tilebelt" "^1.0.1"
+
+"@mapbox/tilebelt@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@mapbox/tilebelt/-/tilebelt-1.0.1.tgz#d57a1c4a5445e928dad720a828389a0a69db8818"
+
+"@mapbox/timespace@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@mapbox/timespace/-/timespace-2.0.4.tgz#cae8dc13fa22ede858167e4be22f5167a24c013f"
+  dependencies:
+    "@mapbox/tile-cover" "^3.0.2"
+    "@mapbox/tilebelt" "^1.0.1"
+    d3-queue "^3.0.3"
+    mkdirp "^0.5.1"
+    moment "^2.12.0"
+    moment-timezone "^0.5.5"
+    rimraf "^2.5.4"
+    simple-statistics "^2.3.0"
+    tile-cover "^3.0.1"
+
 "@mapbox/tiny-sdf@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.1.0.tgz#b0b8f5c22005e6ddb838f421ffd257c1f74f9a20"
@@ -2191,6 +2215,10 @@ d3-interpolate@1:
   resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.3.2.tgz#417d3ebdeb4bc4efcc8fd4361c55e4040211fd68"
   dependencies:
     d3-color "1"
+
+d3-queue@^3.0.3:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/d3-queue/-/d3-queue-3.0.7.tgz#c93a2e54b417c0959129d7d73f6cf7d4292e7618"
 
 d3-scale@^2.1.2:
   version "2.1.2"
@@ -4929,6 +4957,16 @@ mocha@5.2.0:
     mkdirp "0.5.1"
     supports-color "5.4.0"
 
+moment-timezone@^0.5.5:
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.21.tgz#3cba247d84492174dbf71de2a9848fa13207b845"
+  dependencies:
+    moment ">= 2.9.0"
+
+"moment@>= 2.9.0", moment@^2.12.0:
+  version "2.22.2"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -6612,6 +6650,10 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
+simple-statistics@^2.3.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/simple-statistics/-/simple-statistics-2.5.0.tgz#7cd77b04288402f17fe21fd2b63c5e1a51ef3f51"
+
 slack-node@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/slack-node/-/slack-node-0.2.0.tgz#de4b8dddaa8b793f61dbd2938104fdabf37dfa30"
@@ -7130,6 +7172,16 @@ thunkify@^2.1.2:
 thunky@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.0.2.tgz#a862e018e3fb1ea2ec3fce5d55605cf57f247371"
+
+tile-cover@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/tile-cover/-/tile-cover-3.0.1.tgz#3e6d93d1ec2cdf29e164a2e2a51190fd7a4e1e2e"
+  dependencies:
+    tilebelt "^1.0.1"
+
+tilebelt@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tilebelt/-/tilebelt-1.0.1.tgz#3bbf7113b3fec468efb0d9148f4bb71ef126a21a"
 
 timers-browserify@^2.0.4:
   version "2.0.10"
