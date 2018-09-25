@@ -29,9 +29,22 @@ export default class extends Component {
       hoveredFeature: null,
       lngLat: null,
       mapStyle: defaultMapStyle,
+      viewport: {
+        width: 1030,
+        height: 750,
+        latitude: -20,
+        longitude: 0,
+        zoom: 1,
+        bearing: 0,
+        pitch: 0
+      },
     };
     this._onHover = this._onHover.bind(this);
     this._renderTooltip = this._renderTooltip.bind(this);
+  }
+
+  _updateViewport = (viewport) => {
+    this.setState({viewport});
   }
 
   _renderLayers() {
@@ -106,29 +119,29 @@ export default class extends Component {
   render() {
     // const {viewState, controller = true, baseMap = true} = this.props;
     const { mapboxApiAccessToken, selectTimezone } = this.props;
-    const { mapStyle } = this.state;
+    // const {viewport} = this.state;
+    const { mapStyle, viewport } = this.state;
 
-    const viewport =  {
-      latitude: -20,
-      longitude: 0,
-      zoom: 1,
-      bearing: 0,
-      pitch: 0
-    };
+    // const viewport =  {
+    //   latitude: -20,
+    //   longitude: 0,
+    //   zoom: 1,
+    //   bearing: 0,
+    //   pitch: 0
+    // };
 
 
     // timezoneMeta
 
     return (
       <MapGL
+        { ...viewport }
         mapStyle={mapStyle}
-        width={1030}
-        height={750}
         onHover={this._onHover}
         onClick={this.handleClick}
-        { ...viewport }
+        onViewportChange={this._updateViewport}
         mapboxApiAccessToken={mapboxApiAccessToken}
-        preventStyleDiffing={ false }
+        // preventStyleDiffing={ false }
       >
         {this._renderTooltip()}
         {this.renderMaker()}
