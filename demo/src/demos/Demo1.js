@@ -13,7 +13,6 @@ import Select from '@material-ui/core/Select';
 import timezoneMeta from 'moment-timezone/data/meta/latest.json'
 import ReactMapGLTimezone from '../../../src'
 import TimezoneSelect from '../components/TimezoneSelect'
-import Test from '../components/Test'
 import '../../../src/index.css'
 
 const styles = theme => ({
@@ -41,7 +40,7 @@ const menuItems = zoneKeys.map(zoneKey => {
 class Demo1 extends React.Component {
   state = {
     open: false,
-    selectTimezone: '',
+    selectTimezone: null,
   };
 
   handleClose = () => {
@@ -52,15 +51,17 @@ class Demo1 extends React.Component {
     this.setState({ open: true });
   };
 
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
+  // handleChange = (event, test) => {
+  //   console.log(event, test)
+  //   // this.setState({ [event.target.name]: event.target.value });
+  // };
+
+  handleChange = value => this.setState({ selectTimezone: value })
 
   render() {
     const { classes } = this.props;
     const { open, selectTimezone } = this.state;
 
-    // console.log(zoneKeys)
     return (
       <div className={classes.root}>
         <div>
@@ -75,6 +76,7 @@ class Demo1 extends React.Component {
 
           <Paper elevation={6} className={classes.paper}>
             <ReactMapGLTimezone
+              // selectTimezone={selectTimezone && selectTimezone.value}
               mapboxApiAccessToken="pk.eyJ1IjoiamVvbmdzZCIsImEiOiI2N2EwZjRjZmI5ZjI2OGFiZGVjYTczZTE1NDE4MzEyNyJ9.8TAcw2tyxePaN5zqql8GUA"
             />
           </Paper>

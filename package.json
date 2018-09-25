@@ -34,6 +34,13 @@
   },
   "devDependencies": {
     "@material-ui/core": "^3.1.1",
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.1.1",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-plugin-flowtype": "^2.34.1",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
     "nwb": "0.23.x",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",

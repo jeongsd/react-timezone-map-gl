@@ -38,7 +38,7 @@ const styles = theme => ({
 });
 
 
-const zoneKeys = Object.keys(timezoneMeta.zones);
+const zoneKeys = Object.keys(timezoneMeta.zones).sort();
 
 const options = zoneKeys.map(zoneKey => {
   const timezone = timezoneMeta.zones[zoneKey].name;
@@ -76,14 +76,14 @@ class TimezoneSelect extends React.Component {
   }
 
   render() {
-    const { classes, virtual, itemHeight, selectTimezone, onChange } = this.props;
-
+    const { classes, onChange, value } = this.props;
+    console.log(value)
     return (
       <Select
         className={classes.root}
-        // defaultValue={colourOptions[1]}
+        onChange={onChange}
+        value={value}
         options={options}
-        // formatGroupLabel={formatGroupLabel}
       />
     );
   }
