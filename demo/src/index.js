@@ -7,7 +7,7 @@
 // class Demo extends Component {
 //   render() {
 //     return <div>
-//       <h1>react-gl-map-timezone Demo</h1>
+//       <h1>react-timezone-map-gl Demo</h1>
 //       <Example
 //         mapboxApiAccessToken="pk.eyJ1IjoiamVvbmdzZCIsImEiOiI2N2EwZjRjZmI5ZjI2OGFiZGVjYTczZTE1NDE4MzEyNyJ9.8TAcw2tyxePaN5zqql8GUA"
 //       />

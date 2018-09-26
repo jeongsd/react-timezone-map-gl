@@ -60,7 +60,7 @@ const options = zoneKeys.map(zoneKey => {
 
 const formatGroupLabel = zoneKey => {
   const zone = timezoneMeta.zones[zoneKey];
-  console.log(zoneKey)
+  // console.log(zoneKey)
   return (
     <MenuItem key={zone.name} value={zone.name}>
       {zone.name}
@@ -77,7 +77,7 @@ class TimezoneSelect extends React.Component {
 
   render() {
     const { classes, onChange, value } = this.props;
-    console.log(value)
+    // console.log(value)
     return (
       <Select
         className={classes.root}

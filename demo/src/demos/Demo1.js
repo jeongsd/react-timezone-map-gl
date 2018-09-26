@@ -11,7 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import timezoneMeta from 'moment-timezone/data/meta/latest.json'
-import ReactMapGLTimezone from '../../../src'
+import TimezoneMapGL from '../../../src'
 import TimezoneSelect from '../components/TimezoneSelect'
 import '../../../src/index.css'
 
@@ -83,7 +83,7 @@ class Demo1 extends React.Component {
 
 
           <Paper elevation={6} className={classes.paper}>
-            <ReactMapGLTimezone
+            <TimezoneMapGL
               selectTimezone={selectTimezone && selectTimezone.value}
               mapboxApiAccessToken="pk.eyJ1IjoiamVvbmdzZCIsImEiOiI2N2EwZjRjZmI5ZjI2OGFiZGVjYTczZTE1NDE4MzEyNyJ9.8TAcw2tyxePaN5zqql8GUA"
               onTimezoneClick={this.handleTimezoneClick}

@@ -628,6 +628,7 @@
         "source": "timezone-source",
         "type": "fill",
         "paint": {
+          "fill-outline-color": "#81452E",
           "fill-color": {
             "property": "map_color6",
             "stops": [
@@ -643,30 +644,12 @@
             "case",
               ["boolean", ["==", ["get", "objectid"], "placehodler_objectid"]],
                 0.6,
-                0.15
+                0
             ]
         },
         "interactive": true
       },
-      {
-        "id": "timezone-stroke",
-        "source": "timezone-source",
-        "type": "line",
-        "paint": {
-          "line-color": "#81452E",
-          "line-width": 1
-        },
-        "interactive": false
-      },
-      {
-        "id": "timezone-cities-symbol",
-        "source": "timezone-cities",
-        "type": "circle",
-        "paint": {
-          "circle-color": "white"
-        },
-        "interactive": false
-      },
+
 
       {
         "interactive": true,

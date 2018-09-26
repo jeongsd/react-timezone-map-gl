@@ -1,20 +1,25 @@
 import React, {Component} from 'react'
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
+// import geojsonMerge from '@mapbox/geojson-merge';
 import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
 import ts from '@mapbox/timespace';
+import timespaceTimezone from '@mapbox/timespace/lib/timezones.json';
+import tilebelt from '@mapbox/tilebelt';
 import { scaleThreshold } from 'd3-scale';
+import groupBy from 'lodash/groupBy';
+import reduce from 'lodash/reduce';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
 import TimezoneMarkIcon from './TimezoneMarkIcon';
 import timezoneCitiesJSON from '../data/timezoneCities.json';
+import neTimezone from '../data/neTimezone.json';
 import MAP_STYLE from './basic-v9.json';
-import timezone2 from './test.json';
 
 
-console.log('timezoneCitiesJSON', timezoneCitiesJSON)
+// console.log('timezoneCitiesJSON', timezoneCitiesJSON)
 let defaultMapStyle = fromJS(MAP_STYLE);
 defaultMapStyle = defaultMapStyle
-  .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: timezone2 }))
+  .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: neTimezone }))
   .setIn(['sources', 'timezone-cities'], fromJS({ type: 'geojson', data: timezoneCitiesJSON }))
 // defaultMapStyle = defaultMapStyle
 
@@ -22,11 +27,26 @@ defaultMapStyle = defaultMapStyle
 const OVERLAYS_CLASSNAME = 'overlays';
 
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
-
-
-// momentTimezone.zones.map
-
 const zoneKeys = Object.keys(momentTimezone.zones);
+
+const newData = reduce(timespaceTimezone, (result, tz, tilePoint) => {
+  if(result[tz]) {
+    result[tz] = [...result[tz], tilePoint];
+  } else {
+    result[tz] = [tilePoint];
+  }
+  return result;
+}, {})
+
+// const keys = Object.keys(timespaceTimezone)
+// for (let index = 0; index < keys.length; index++) {
+//   const key = keys[index];
+
+// }
+// console.log(newData)
+// const timezoneTile = groupBy(timespaceTimezone, tzName => tzName)
+// console.log(timezoneTile);
+
 export default class extends Component {
   constructor(props) {
     super(props);
@@ -62,7 +82,20 @@ export default class extends Component {
 
   _onHover = event => {
     const { features, target, lngLat, srcEvent: { offsetX, offsetY }} = event;
-    if(target.className !== OVERLAYS_CLASSNAME) return;
+    if (target.className !== OVERLAYS_CLASSNAME) return;
+
+    // let dist;
+    // let closestDist = 100;
+    // let closestTimezone;
+    // for (let index = 0; index < zoneKeys.length; index++) {
+    //   const zone = momentTimezone.zones[zoneKeys[index]];
+    //   dist = distSqr([zone.long, zone.lat], lngLat)
+    //   if (dist < closestDist) {
+    //     closestTimezone = zone;
+    //     closestDist = dist;
+    //   }
+    // }
+    // console.log('closestTimezone', closestTimezone)
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-fill');
     const countryFeature = features && features.find(f => f.layer.id === 'admin_country');
@@ -76,12 +109,17 @@ export default class extends Component {
   };
 
   handleClick = (event) => {
+    // console.log('handleClick')
     const { onTimezoneClick } = this.props;
-    // const hoverFeature = event.features && event.features.find(f => f.layer.id === 'timezone-fill');
+    const hoverFeature = event.features && event.features.find(f => f.layer.id === 'timezone-fill');
     const time = ts.getFuzzyLocalTimeFromPoint(Date.now(), event.lngLat);
-    console.log(time.tz());
-    if (onTimezoneClick && time) onTimezoneClick(event, time.tz())
 
+    if (onTimezoneClick && time) {
+      onTimezoneClick(event, time.tz())
+    }
+    // console.log(timespaceTimezone);
+    // console.log(time.tz());
+    // console.log(time);
 
     //
     // console.log(event.features);
@@ -111,12 +149,29 @@ export default class extends Component {
 
   renderMaker() {
     const { selectTimezone } = this.props;
+
+    // console.log();
+
+    if(selectTimezone) {
+      // console.log(selectTimezone);
+      // const tilePonewData = newData[selectTimezone].map(tilePoint => tilebelt.tileToGeoJSON(tilePoint.split('/')))
+      // tileToGeoJSON()
+      https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_time_zones.zip
+      // var mergedGeoJSON = geojsonMerge.merge(tilePonewData);
+      // console.log(mergedGeoJSON)
+      // const a = tilebelt.getParent()
+      // console.log(timezoneTile[selectTimezone])
+      // console.log(a);
+    }
+
     const timezoneMeta = selectTimezone && momentTimezone.zones[selectTimezone];
     if (!timezoneMeta) return null;
     return (
       <Marker
         longitude={timezoneMeta.long}
         latitude={timezoneMeta.lat}
+        offsetLeft={-10}
+        offsetTop={-13}
       >
         <TimezoneMarkIcon />
         {/* <CityPin size={20} onClick={() => this.setState({popupInfo: city})} /> */}
@@ -152,16 +207,6 @@ export default class extends Component {
     const { mapboxApiAccessToken, selectTimezone } = this.props;
     // const {viewport} = this.state;
     const { mapStyle, viewport } = this.state;
-
-    // const viewport =  {
-    //   latitude: -20,
-    //   longitude: 0,
-    //   zoom: 1,
-    //   bearing: 0,
-    //   pitch: 0
-    // };
-
-
     // timezoneMeta
 
     return (
