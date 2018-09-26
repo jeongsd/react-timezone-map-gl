@@ -1,6 +1,6 @@
 {
   "name": "react-timezone-map-gl",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "react-timezone-map-gl React component",
   "main": "lib/index.js",
   "module": "es/index.js",

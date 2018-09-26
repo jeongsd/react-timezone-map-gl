@@ -40,7 +40,7 @@ class Index extends React.Component {
     return (
       <div className={classes.root}>
         <Typography variant="display2" align="center" gutterBottom>
-
+          react-gl-map-timezone
         </Typography>
         <Demo1 />
       </div>

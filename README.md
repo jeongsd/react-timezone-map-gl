@@ -1,10 +1,23 @@
 # react-timezone-map-gl
 
+WIP
+
+## TODO
+- [ ] Doc
+- [ ] Test
+- [ ] Style change
+- [ ] Intl
+- [ ] Select maker
+- [ ] Popup timezone Info
+- [ ] Select water
+- [ ] Performance
+- [ ] Compress JSON files size
+- [ ] Export import JSON files
+
+<!--
 [![Travis][build-badge]][build]
 [![npm package][npm-badge]][npm]
 [![Coveralls][coveralls-badge]][coveralls]
-
-Describe react-timezone-map-gl here.
 
 [build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
 [build]: https://travis-ci.org/user/repo
@@ -13,4 +26,4 @@ Describe react-timezone-map-gl here.
 [npm]: https://www.npmjs.org/package/npm-package
 
 [coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
-[coveralls]: https://coveralls.io/github/user/repo
+[coveralls]: https://coveralls.io/github/user/repo -->
