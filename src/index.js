@@ -152,17 +152,17 @@ export default class extends Component {
 
     // console.log();
 
-    if(selectTimezone) {
-      // console.log(selectTimezone);
-      // const tilePonewData = newData[selectTimezone].map(tilePoint => tilebelt.tileToGeoJSON(tilePoint.split('/')))
-      // tileToGeoJSON()
-      https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_time_zones.zip
-      // var mergedGeoJSON = geojsonMerge.merge(tilePonewData);
-      // console.log(mergedGeoJSON)
-      // const a = tilebelt.getParent()
-      // console.log(timezoneTile[selectTimezone])
-      // console.log(a);
-    }
+    // if(selectTimezone) {
+    //   // console.log(selectTimezone);
+    //   // const tilePonewData = newData[selectTimezone].map(tilePoint => tilebelt.tileToGeoJSON(tilePoint.split('/')))
+    //   // tileToGeoJSON()
+    //   https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_time_zones.zip
+    //   // var mergedGeoJSON = geojsonMerge.merge(tilePonewData);
+    //   // console.log(mergedGeoJSON)
+    //   // const a = tilebelt.getParent()
+    //   // console.log(timezoneTile[selectTimezone])
+    //   // console.log(a);
+    // }
 
     const timezoneMeta = selectTimezone && momentTimezone.zones[selectTimezone];
     if (!timezoneMeta) return null;
