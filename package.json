@@ -17,7 +17,8 @@
     "start": "nwb serve-react-demo",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server"
+    "test:watch": "nwb test-react --server",
+    "generateData": "node ./scripts/generateTimezoneCities.js"
   },
   "dependencies": {
     "@mapbox/tilebelt": "^1.0.1",
@@ -36,12 +37,16 @@
   "devDependencies": {
     "@material-ui/core": "^3.1.1",
     "babel-eslint": "^7.2.3",
+    "chalk": "^2.4.1",
     "eslint": "^4.1.1",
     "eslint-config-react-app": "^2.1.0",
     "eslint-plugin-flowtype": "^2.34.1",
     "eslint-plugin-import": "^2.6.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.1.0",
+    "fs-extra": "^7.0.0",
+    "geojson": "^0.5.0",
+    "jsonfile": "^5.0.0",
     "nwb": "0.23.x",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",

@@ -23,6 +23,10 @@ const OVERLAYS_CLASSNAME = 'overlays';
 
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
 
+
+// momentTimezone.zones.map
+
+const zoneKeys = Object.keys(momentTimezone.zones);
 export default class extends Component {
   constructor(props) {
     super(props);
@@ -120,6 +124,29 @@ export default class extends Component {
     );
   }
 
+  renderTimezoneCities() {
+    // const { selectTimezone } = this.props;
+    // const timezoneMeta = selectTimezone && momentTimezone.zones[selectTimezone];
+    // if (!timezoneMeta) return null;
+    // console.log(momentTimezone)
+    return zoneKeys.map(zoneKey => {
+
+      const timezoneMeta = momentTimezone.zones[zoneKey];
+      // console.log(timezoneMeta.long)
+      return (
+        <Marker
+          key={zoneKey}
+          longitude={timezoneMeta.long}
+          latitude={timezoneMeta.lat}
+        >
+          {timezoneMeta.name}
+          {/* <TimezoneMarkIcon /> */}
+          {/* <CityPin size={20} onClick={() => this.setState({popupInfo: city})} /> */}
+        </Marker>
+      )
+    });
+  }
+
   render() {
     // const {viewState, controller = true, baseMap = true} = this.props;
     const { mapboxApiAccessToken, selectTimezone } = this.props;
@@ -141,7 +168,7 @@ export default class extends Component {
       <MapGL
         { ...viewport }
         minZoom={1}
-        maxZoom={4}
+        maxZoom={3}
         mapStyle={mapStyle}
         onHover={this._onHover}
         onClick={this.handleClick}
@@ -149,9 +176,11 @@ export default class extends Component {
         mapboxApiAccessToken={mapboxApiAccessToken}
         // preventStyleDiffing={ false }
       >
+        {this.renderTimezoneCities()}
         {this._renderTooltip()}
-        {this.renderMaker()}
-        <div className="navigationControlWrapper" onHover={() => { console.log('onHover') }}>
+        {/* {this.renderMaker()} */}
+
+        <div className="navigationControlWrapper">
           <NavigationControl onViewportChange={this._updateViewport} />
         </div>
       </MapGL>
