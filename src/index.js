@@ -1,23 +1,23 @@
 import React, {Component} from 'react'
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
-// import {InteractiveMap} from 'react-map-gl';
 import DeckGL, { GeoJsonLayer, LineLayer } from 'deck.gl';
 import ts from '@mapbox/timespace';
 import { scaleThreshold } from 'd3-scale';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
-// import timezone from './timezone.json';
 import TimezoneMarkIcon from './TimezoneMarkIcon';
+import timezoneCitiesJSON from '../data/timezoneCities.json';
 import MAP_STYLE from './basic-v9.json';
 import timezone2 from './test.json';
-// import bart from './bart.geo.json';
-
-// console.log(timezone)
 
 
+console.log('timezoneCitiesJSON', timezoneCitiesJSON)
 let defaultMapStyle = fromJS(MAP_STYLE);
 defaultMapStyle = defaultMapStyle
-  .setIn(['sources', 'timezone-source'], fromJS({type: 'geojson', data: timezone2 }))
+  .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: timezone2 }))
+  .setIn(['sources', 'timezone-cities'], fromJS({ type: 'geojson', data: timezoneCitiesJSON }))
+// defaultMapStyle = defaultMapStyle
+
 
 const OVERLAYS_CLASSNAME = 'overlays';
 
@@ -71,7 +71,7 @@ export default class extends Component {
       lngLat,
       x: offsetX,
       y: offsetY,
-      // mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.objectid),
+      mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.objectid),
     });
   };
 
@@ -168,7 +168,7 @@ export default class extends Component {
       <MapGL
         { ...viewport }
         minZoom={1}
-        maxZoom={3}
+        maxZoom={5}
         mapStyle={mapStyle}
         onHover={this._onHover}
         onClick={this.handleClick}
@@ -176,9 +176,9 @@ export default class extends Component {
         mapboxApiAccessToken={mapboxApiAccessToken}
         // preventStyleDiffing={ false }
       >
-        {this.renderTimezoneCities()}
+        {/* {this.renderTimezoneCities()} */}
         {this._renderTooltip()}
-        {/* {this.renderMaker()} */}
+        {this.renderMaker()}
 
         <div className="navigationControlWrapper">
           <NavigationControl onViewportChange={this._updateViewport} />

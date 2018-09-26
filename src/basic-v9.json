@@ -658,6 +658,15 @@
         },
         "interactive": false
       },
+      {
+        "id": "timezone-cities-symbol",
+        "source": "timezone-cities",
+        "type": "circle",
+        "paint": {
+          "circle-color": "white"
+        },
+        "interactive": false
+      },
 
       {
         "interactive": true,
@@ -899,15 +908,6 @@
             "text-halo-blur": 1
         },
         "source-layer": "country_label"
-    },
-    {
-      "id": "timezone-select-fill",
-      "source": "timezone-select",
-      "type": "fill",
-      "paint": {
-        "fill-color": "black"
-      },
-      "interactive": true
     }
   ]
 }
