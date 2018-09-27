@@ -60,6 +60,7 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-select": "^2.0.0",
+    "react-sizeme": "^2.5.2",
     "react-virtualized": "^9.20.1"
   },
   "author": "",

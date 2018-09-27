@@ -130,6 +130,22 @@
         },
         "interactive": true
       },
+      {
+        "id": "timezone-boundary-builder-select-fill",
+        "source": "timezone-boundary-builder",
+        "type": "fill",
+        "paint": {
+          "fill-outline-color": "#81452E",
+          "fill-color": "black",
+          "fill-opacity": [
+            "case",
+              ["boolean", ["==", ["get", "tzid"], "placehodler_tzid"]],
+                0.5,
+                0
+            ]
+        },
+        "interactive": true
+      },
 
       {
         "interactive": true,
@@ -350,7 +366,7 @@
                     ],
                     [
                         8,
-                        22
+                        16
                     ]
                 ]
             }
@@ -365,12 +381,46 @@
         "source": "mapbox",
         "id": "country_label",
         "paint": {
-            "text-color": "black",
-            "text-halo-color": "white",
-            "text-halo-width": 2,
-            "text-halo-blur": 1
+            "text-color": "black"
         },
         "source-layer": "country_label"
+    },
+    {
+        "interactive": false,
+        "layout": {
+            "text-transform": "uppercase",
+            "text-field": "{name_en}",
+            "text-font": [
+                "Open Sans Italic",
+                "Arial Unicode MS Regular"
+            ],
+            "text-max-width": 5,
+            "text-size": {
+                "stops": [
+                    [
+                        3,
+                        16
+                    ],
+                    [
+                        8,
+                        20
+                    ]
+                ]
+            }
+        },
+        "maxzoom": 12,
+        "filter": [
+            "==",
+            "$type",
+            "Point"
+        ],
+        "type": "symbol",
+        "source": "mapbox",
+        "id": "marine_label",
+        "paint": {
+            "text-color": "#333333"
+        },
+        "source-layer": "marine_label"
     }
   ]
 }

@@ -26,6 +26,8 @@ const OVERLAYS_CLASSNAME = 'overlays';
 // #98AEB0
 // #C2C97F
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-fill')
+export const highlightLayerSelectIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-select-fill')
+
 const zoneKeys = Object.keys(momentTimezone.zones);
 export default class extends Component {
   constructor(props) {
@@ -42,7 +44,8 @@ export default class extends Component {
         longitude: 0,
         zoom: 1,
         bearing: 0,
-        pitch: 0
+        pitch: 0,
+        ...this.props.defaultViewport,
       },
     };
     this._onHover = this._onHover.bind(this);
@@ -50,27 +53,23 @@ export default class extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    const { mapStyle } = this.state;
+    // console.log('this.props.selectTimezone', this.props.selectTimezone)
+    // console.log(mapStyle);
     if (prevProps.selectTimezone !== this.props.selectTimezone) {
       this.setState({
-        mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
+        mapStyle: mapStyle.setIn(['layers', highlightLayerSelectIndex, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
       });
     }
   }
-
 
   _updateViewport = (viewport) => {
     this.setState({viewport});
   }
 
-  _renderLayers() {
-    // const {data = DATA_URL} = this.props;
-
-    return [
-    ];
-  }
-
   _onHover = event => {
     const { features, target, lngLat, srcEvent: { offsetX, offsetY }} = event;
+    const { mapStyle } = this.state;
     if (target.className !== OVERLAYS_CLASSNAME) return;
 
     // let dist;
@@ -95,7 +94,7 @@ export default class extends Component {
       lngLat,
       x: offsetX,
       y: offsetY,
-      mapStyle: defaultMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid),
+      mapStyle: mapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid),
     });
   };
 

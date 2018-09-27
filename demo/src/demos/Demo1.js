@@ -2,20 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import { SizeMe } from 'react-sizeme'
 import TimezoneMapGL from '../../../src'
 import TimezoneSelect from '../components/TimezoneSelect'
 import '../../../src/index.css'
 
 const styles = theme => ({
   root: {
-    // textAlign: 'center',
+    width: '100%',
     marginTop: theme.spacing.unit * 4,
-    display: 'flex',
-    justifyContent: 'center',
+    // display: 'flex',
+    // justifyContent: 'center',
   },
   paper: {
+
     // textAlign: 'center',
+    margin: 'auto',
     marginTop: theme.spacing.unit * 7,
+    width: '100%',
+    maxWidth: 'calc(100% - 256px)',
   },
 });
 
@@ -47,11 +52,20 @@ class Demo1 extends React.Component {
             onChange={this.handleChange}
           />
           <Paper elevation={6} className={classes.paper}>
-            <TimezoneMapGL
-              selectTimezone={selectTimezone && selectTimezone.value}
-              mapboxApiAccessToken={mapboxApiAccessToken}
-              onTimezoneClick={this.handleTimezoneClick}
-            />
+            <SizeMe>
+              {({ size }) => (
+                <TimezoneMapGL
+                  selectTimezone={selectTimezone && selectTimezone.value}
+                  mapboxApiAccessToken={mapboxApiAccessToken}
+                  onTimezoneClick={this.handleTimezoneClick}
+                  defaultViewport={{
+                    width: size.width,
+                    height: size.width / 27 * 14,
+                    zoom: 1.5,
+                  }}
+                />
+              )}
+            </SizeMe>
           </Paper>
         </div>
       </div>

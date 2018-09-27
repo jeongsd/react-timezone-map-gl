@@ -1,9 +1,9 @@
 .tooltip {
   position: absolute;
-  padding: 8px 16px;
+  padding: 4px 16px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  max-width: 300px;
+  /* max-width: 300px; */
   font-size: 16px;
   z-index: 10;
   pointer-events: none;
