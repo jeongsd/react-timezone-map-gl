@@ -16,6 +16,15 @@ defaultMapStyle = defaultMapStyle
 
 const OVERLAYS_CLASSNAME = 'overlays';
 
+// #F0DFBE
+// #EECCB5
+// #C9D5D5
+// #D5DABA
+
+// #E1C281
+// #DD9D75
+// #98AEB0
+// #C2C97F
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-fill')
 const zoneKeys = Object.keys(momentTimezone.zones);
 export default class extends Component {
@@ -156,7 +165,7 @@ export default class extends Component {
       <MapGL
         { ...viewport }
         minZoom={1}
-        maxZoom={5}
+        maxZoom={8}
         mapStyle={mapStyle}
         onHover={this._onHover}
         onClick={this.handleClick}

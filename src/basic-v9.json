@@ -23,14 +23,14 @@
           "fill-color": {
             "property": "map_color8",
             "stops": [
-                [1, "#F0DFBE"],
-                [2, "#EECCB5"],
-                [3, "#C9D5D5"],
-                [4, "#D5DABA"],
-                [5, "#F0DFBE"],
-                [6, "#EECCB5"],
-                [7, "#C9D5D5"],
-                [8, "#D5DABA"]
+                [1, "#E1C281"],
+                [2, "#DD9D75"],
+                [3, "#98AEB0"],
+                [4, "#C2C97F"],
+                [5, "#E1C281"],
+                [6, "#DD9D75"],
+                [7, "#98AEB0"],
+                [8, "#C2C97F"]
             ]
           }
         },
@@ -46,37 +46,6 @@
           "interactive": true
       },
       {
-          "id": "landuse_overlay_national_park",
-          "type": "fill",
-          "source": "mapbox",
-          "source-layer": "landuse_overlay",
-          "filter": [
-              "==",
-              "class",
-              "national_park"
-          ],
-          "paint": {
-              "fill-color": "#d2edae",
-              "fill-opacity": 0.75
-          },
-          "interactive": true
-      },
-      {
-          "id": "landuse_park",
-          "type": "fill",
-          "source": "mapbox",
-          "source-layer": "landuse",
-          "filter": [
-              "==",
-              "class",
-              "park"
-          ],
-          "paint": {
-              "fill-color": "#d2edae"
-          },
-          "interactive": true
-      },
-      {
           "id": "water",
           "type": "fill",
           "source": "mapbox",
@@ -87,16 +56,6 @@
               "fill-outline-color": "#afafaf"
           },
           "interactive": false
-      },
-      {
-          "id": "building",
-          "type": "fill",
-          "source": "mapbox",
-          "source-layer": "building",
-          "paint": {
-              "fill-color": "#d6d6d6"
-          },
-          "interactive": true
       },
       {
           "interactive": true,
@@ -562,6 +521,54 @@
           },
           "source-layer": "road"
       },
+      {
+        "interactive": true,
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+        },
+        "filter": [
+            "all",
+            [
+                "==",
+                "$type",
+                "LineString"
+            ],
+            [
+                "all",
+                [
+                    "<=",
+                    "admin_level",
+                    2
+                ],
+                [
+                    "==",
+                    "maritime",
+                    0
+                ]
+            ]
+        ],
+        "type": "line",
+        "source": "mapbox",
+        "id": "admin_country",
+        "paint": {
+            "line-color": "white",
+            "line-width": {
+                "base": 1.3,
+                "stops": [
+                    [
+                        3,
+                        0.5
+                    ],
+                    [
+                        22,
+                        15
+                    ]
+                ]
+            }
+        },
+        "source-layer": "admin"
+    },
       {
         "id": "timezone-line",
         "source": "timezone-source",
