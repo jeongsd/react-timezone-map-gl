@@ -1,10 +1,10 @@
 .tooltip {
   position: absolute;
-  padding: 4px;
+  padding: 4px 16px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  max-width: 300px;
-  font-size: 10px;
+  /* max-width: 300px; */
+  font-size: 16px;
   z-index: 10;
   pointer-events: none;
 }
@@ -521,4 +521,4 @@ a.mapboxgl-ctrl-logo.mapboxgl-compact {
 }
 
 
-/*# sourceMappingURL=demo.f3230220.css.map*/
+/*# sourceMappingURL=demo.5ec24fb6.css.map*/
