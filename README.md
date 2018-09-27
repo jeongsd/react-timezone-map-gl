@@ -2,6 +2,10 @@
 
 WIP
 
+## Goal
+
+https://www.cia.gov/library/publications/the-world-factbook/graphics/ref_maps/physical/pdf/standard_time_zones_of_the_world.pdf
+
 ## TODO
 - [ ] Doc
 - [ ] Test
