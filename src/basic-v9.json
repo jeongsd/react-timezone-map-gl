@@ -14,11 +14,34 @@
   "sprite": "mapbox://sprites/mapbox/basic-v9",
   "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
   "layers": [
+         {
+        "id": "timezone-fill",
+        "source": "timezone-source",
+        "type": "fill",
+        "paint": {
+
+          "fill-color": {
+            "property": "map_color8",
+            "stops": [
+                [1, "#F0DFBE"],
+                [2, "#EECCB5"],
+                [3, "#C9D5D5"],
+                [4, "#D5DABA"],
+                [5, "#F0DFBE"],
+                [6, "#EECCB5"],
+                [7, "#C9D5D5"],
+                [8, "#D5DABA"]
+            ]
+          }
+        },
+        "interactive": false
+      },
       {
           "id": "background",
           "type": "background",
           "paint": {
-              "background-color": "#eeeeee"
+              "background-color": "#dddddd",
+              "background-opacity": 0
           },
           "interactive": true
       },
@@ -54,52 +77,16 @@
           "interactive": true
       },
       {
-          "id": "waterway",
-          "type": "line",
-          "source": "mapbox",
-          "source-layer": "waterway",
-          "filter": [
-              "all",
-              [
-                  "==",
-                  "$type",
-                  "LineString"
-              ],
-              [
-                  "in",
-                  "class",
-                  "river",
-                  "canal"
-              ]
-          ],
-          "paint": {
-              "line-color": "#a0cfdf",
-              "line-width": {
-                  "base": 1.4,
-                  "stops": [
-                      [
-                          8,
-                          0.5
-                      ],
-                      [
-                          20,
-                          15
-                      ]
-                  ]
-              }
-          },
-          "interactive": true
-      },
-      {
           "id": "water",
           "type": "fill",
           "source": "mapbox",
           "source-layer": "water",
           "paint": {
               "fill-color": "white",
+              "fill-opacity": 0.6,
               "fill-outline-color": "#afafaf"
           },
-          "interactive": true
+          "interactive": false
       },
       {
           "id": "building",
@@ -576,71 +563,11 @@
           "source-layer": "road"
       },
       {
-          "interactive": true,
-          "layout": {
-              "line-cap": "round",
-              "line-join": "round"
-          },
-          "filter": [
-              "all",
-              [
-                  "==",
-                  "$type",
-                  "LineString"
-              ],
-              [
-                  "all",
-                  [
-                      "<=",
-                      "admin_level",
-                      2
-                  ],
-                  [
-                      "==",
-                      "maritime",
-                      0
-                  ]
-              ]
-          ],
-          "type": "line",
-          "source": "mapbox",
-          "id": "admin_country",
-          "paint": {
-              "line-color": "#8b8a8a",
-              "line-width": {
-                  "base": 1.3,
-                  "stops": [
-                      [
-                          3,
-                          0.5
-                      ],
-                      [
-                          22,
-                          15
-                      ]
-                  ]
-              }
-          },
-          "source-layer": "admin"
-      },
-      {
-        "id": "timezone-fill",
+        "id": "timezone-line",
         "source": "timezone-source",
-        "type": "fill",
+        "type": "line",
         "paint": {
-          "fill-outline-color": "#81452E",
-          "fill-color": {
-            "property": "map_color6",
-            "stops": [
-                [1, "#3288bd"],
-                [2, "#ffffbf"],
-                [3, "#66c2a5"],
-                [4, "#fdae61"],
-                [5, "#abdda4"],
-                [6, "#d53e4f"]
-            ]
-          },
-          "fill-opacity": 0.2
+          "line-color": "#81452E"
         },
         "interactive": false
       },

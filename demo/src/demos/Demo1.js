@@ -19,7 +19,7 @@ const styles = theme => ({
   },
 });
 
-const mapboxApiAccessToken = '';
+const mapboxApiAccessToken = 'pk.eyJ1IjoiamVvbmdzZCIsImEiOiJjam1qcWxoY28wOTJmM3ZvZjBpbnB4aDNnIn0.kwjRZsFwP5Pqian_w5hA_Q';
 class Demo1 extends React.Component {
   state = {
     selectTimezone: null,
@@ -41,13 +41,11 @@ class Demo1 extends React.Component {
     return (
       <div className={classes.root}>
         <div>
-          {/* <Test /> */}
-          {/* <div className={classes.timezoneSelectWrapper}> */}
-            <TimezoneSelect
-              value={selectTimezone}
-              onChange={this.handleChange}
-            />
-          {/* </div> */}
+
+          <TimezoneSelect
+            value={selectTimezone}
+            onChange={this.handleChange}
+          />
           <Paper elevation={6} className={classes.paper}>
             <TimezoneMapGL
               selectTimezone={selectTimezone && selectTimezone.value}
