@@ -21,7 +21,7 @@
     "generateData": "node ./scripts/generateTimezoneCities.js",
     "generateTsTzGeojson": "node ./scripts/generateTsTzGeojson.js",
     "generateNaturalEarthData": "scripts/generateNaturalEarthData.sh",
-    "generateBoundaryBuilder": "scripts/generateBoundaryBuilder.sh",
+    "generateTimezoneData": "scripts/generateTimezoneData.sh",
     "deploy": "gh-pages -d demo/dist"
   },
   "dependencies": {
