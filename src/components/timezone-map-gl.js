@@ -1,26 +1,19 @@
 import React, {Component} from 'react'
+import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
 import { feature as topoFeature } from "topojson-client";
 import TimezoneMarkIcon from './TimezoneMarkIcon';
-// import neTimezone from '../data/neTimezone.json';
-// import tzbbJSON from '../data/timezone-boundary-builder.json';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
 
-let defaultMapStyle = fromJS(MAP_STYLE);
-defaultMapStyle = defaultMapStyle
-  // .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: topoFeature(neTimezone, neTimezone.objects.ne_10m_time_zones) }))
-  // .setIn(['sources', 'timezone-boundary-builder'], fromJS({ type: 'geojson', data: topoFeature(tzbbJSON, tzbbJSON.objects.combined_shapefile) }))
-
-  // combined_shapefile
-
 const OVERLAYS_CLASSNAME = 'overlays';
 
-export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-fill')
-export const highlightLayerSelectIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-select-fill')
-export const highlightNeLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
+const findLayer = id => mapStyle => mapStyle.get('layers').findIndex(layer => layer.get('id') === id)
+const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
+const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
+const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
 
 const zoneKeys = Object.keys(momentTimezone.zones);
 class TimezoneMapGL extends Component {
@@ -30,7 +23,7 @@ class TimezoneMapGL extends Component {
     this.state = {
       hoveredFeature: null,
       lngLat: null,
-      mapStyle: defaultMapStyle,
+      mapStyle: this.props.defaultMapStyle,
       viewport: {
         width: 1030,
         height: 750,
@@ -48,11 +41,10 @@ class TimezoneMapGL extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { mapStyle } = this.state;
-    // console.log('this.props.selectTimezone', this.props.selectTimezone)
-    // console.log(mapStyle);
+
     if (prevProps.selectTimezone !== this.props.selectTimezone) {
       this.setState({
-        mapStyle: mapStyle.setIn(['layers', highlightLayerSelectIndex, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
+        mapStyle: mapStyle.setIn(['layers', BOUNDARY_SELECT_LAYER, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
       });
     }
   }
@@ -66,19 +58,6 @@ class TimezoneMapGL extends Component {
     const { mapStyle } = this.state;
     if (target.className !== OVERLAYS_CLASSNAME) return;
 
-    // let dist;
-    // let closestDist = 100;
-    // let closestTimezone;
-    // for (let index = 0; index < zoneKeys.length; index++) {
-    //   const zone = momentTimezone.zones[zoneKeys[index]];
-    //   dist = distSqr([zone.long, zone.lat], lngLat)
-    //   if (dist < closestDist) {
-    //     closestTimezone = zone;
-    //     closestDist = dist;
-    //   }
-    // }
-    // console.log('closestTimezone', closestTimezone)
-
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
     const neTimeZoneFeature = features && features.find(f => f.layer.id === 'timezone-fill');
     const newState = {};
@@ -86,13 +65,11 @@ class TimezoneMapGL extends Component {
     if(hoveredFeature) {
       newState.hoveredFeature = hoveredFeature;
       newState.neTimeZoneFeature = null;
-      newMapStyle = newMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
-      // newMapStyle = newMapStyle.setIn(['layers', highlightNeLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], 'placehodler_objectid');
+      newMapStyle = newMapStyle.setIn(['layers', BOUNDARY_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
     } else if (neTimeZoneFeature) {
       newState.neTimeZoneFeature = neTimeZoneFeature;
       newState.hoveredFeature = null;
-      newMapStyle = newMapStyle.setIn(['layers', highlightNeLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], neTimeZoneFeature.properties.objectid);
-      // newMapStyle = newMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], 'placehodler_tzid');
+      newMapStyle = newMapStyle.setIn(['layers', FIND_NE_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], neTimeZoneFeature.properties.objectid);
     }
 
     this.setState({
@@ -205,4 +182,29 @@ class TimezoneMapGL extends Component {
   }
 }
 
-export default withSource(TimezoneMapGL);
+export default compose(
+  withSource,
+  defaultProps({
+    defaultMapStyle: fromJS(MAP_STYLE)
+  }),
+  withProps(({ source, defaultMapStyle }) => ({
+    defaultMapStyle: defaultMapStyle
+      .setIn(
+        ['sources', 'timezone-source'],
+        fromJS({
+          type: 'geojson',
+          data: topoFeature(source.naturalEarth, source.naturalEarth.objects.ne_10m_time_zones),
+        }),
+      )
+      .setIn(
+        ['sources', 'timezone-boundary-builder'],
+        fromJS({
+          type: 'geojson',
+          data: topoFeature(source.timezoneBoundaryBuilder, source.timezoneBoundaryBuilder.objects.combined_shapefile)
+        })
+      ),
+      // findBoundaryFillLayer,
+  }))
+)(TimezoneMapGL)
+
+// ();

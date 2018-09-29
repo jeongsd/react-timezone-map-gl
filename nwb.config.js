@@ -3,5 +3,16 @@ module.exports = {
   npm: {
     esModules: true,
     umd: false
-  }
+  },
+  babel: {
+    plugins: [
+      ['module-resolver', {
+        'root': ['.'],
+        'alias': {
+          'react-timezone-map-gl': './src'
+        },
+      }],
+    ],
+  },
+
 }
