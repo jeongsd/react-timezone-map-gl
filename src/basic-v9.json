@@ -63,7 +63,7 @@
           "interactive": false
       },
       {
-        "interactive": true,
+        "interactive": false,
         "layout": {
             "line-cap": "round",
             "line-join": "round"
@@ -153,7 +153,7 @@
       },
 
       {
-        "interactive": true,
+        "interactive": false,
         "minzoom": 5,
         "layout": {
             "icon-image": "{maki}-11",
@@ -204,7 +204,7 @@
         "source-layer": "poi_label"
     },
     {
-        "interactive": true,
+        "interactive": false,
         "layout": {
             "symbol-placement": "line",
             "text-field": "{name_en}",
@@ -256,7 +256,7 @@
         "source-layer": "road_label"
     },
     {
-        "interactive": true,
+        "interactive": false,
         "minzoom": 8,
         "layout": {
             "text-field": "{name_en}",
@@ -308,7 +308,7 @@
         "source-layer": "place_label"
     },
     {
-        "interactive": true,
+        "interactive": false,
         "layout": {
             "text-field": "{name_en}",
             "text-font": [
@@ -355,7 +355,7 @@
         "source-layer": "place_label"
     },
     {
-        "interactive": true,
+        "interactive": false,
         "layout": {
             "text-field": "{name_en}",
             "text-font": [

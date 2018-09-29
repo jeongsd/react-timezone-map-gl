@@ -2,17 +2,18 @@ import React, {Component} from 'react'
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
+import { feature as topoFeature } from "topojson-client";
 import TimezoneMarkIcon from './TimezoneMarkIcon';
 import neTimezone from '../data/neTimezone.json';
 import tzbbJSON from '../data/timezone-boundary-builder.json';
 import MAP_STYLE from './basic-v9.json';
 
-
 let defaultMapStyle = fromJS(MAP_STYLE);
 defaultMapStyle = defaultMapStyle
-  .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: neTimezone }))
-  .setIn(['sources', 'timezone-boundary-builder'], fromJS({ type: 'geojson', data: tzbbJSON }))
+  .setIn(['sources', 'timezone-source'], fromJS({ type: 'geojson', data: topoFeature(neTimezone, neTimezone.objects.ne_10m_time_zones) }))
+  .setIn(['sources', 'timezone-boundary-builder'], fromJS({ type: 'geojson', data: topoFeature(tzbbJSON, tzbbJSON.objects.combined_shapefile) }))
 
+  // combined_shapefile
 
 const OVERLAYS_CLASSNAME = 'overlays';
 
