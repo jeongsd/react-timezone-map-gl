@@ -19,7 +19,12 @@
         "source": "timezone-source",
         "type": "fill",
         "paint": {
-
+          "fill-opacity": [
+            "case",
+                ["boolean", ["==", ["get", "objectid"], "placehodler_objectid"]],
+                1,
+                0.8
+            ],
           "fill-color": {
             "property": "map_color8",
             "stops": [
@@ -34,7 +39,7 @@
             ]
           }
         },
-        "interactive": false
+        "interactive": true
       },
       {
           "id": "background",

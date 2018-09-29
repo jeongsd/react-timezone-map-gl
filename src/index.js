@@ -27,6 +27,7 @@ const OVERLAYS_CLASSNAME = 'overlays';
 // #C2C97F
 export const highlightLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-fill')
 export const highlightLayerSelectIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-boundary-builder-select-fill')
+export const highlightNeLayerIndex = defaultMapStyle.get('layers').findIndex(layer => layer.get('id') === 'timezone-fill')
 
 const zoneKeys = Object.keys(momentTimezone.zones);
 export default class extends Component {
@@ -86,15 +87,27 @@ export default class extends Component {
     // console.log('closestTimezone', closestTimezone)
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
+    const neTimeZoneFeature = features && features.find(f => f.layer.id === 'timezone-fill');
+    const newState = {};
+    let newMapStyle = mapStyle;
+    if(hoveredFeature) {
+      newState.hoveredFeature = hoveredFeature;
+      newState.neTimeZoneFeature = null;
+      newMapStyle = newMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
+      // newMapStyle = newMapStyle.setIn(['layers', highlightNeLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], 'placehodler_objectid');
+    } else if (neTimeZoneFeature) {
+      newState.neTimeZoneFeature = neTimeZoneFeature;
+      newState.hoveredFeature = null;
+      newMapStyle = newMapStyle.setIn(['layers', highlightNeLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], neTimeZoneFeature.properties.objectid);
+      // newMapStyle = newMapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], 'placehodler_tzid');
+    }
 
-
-    if(!hoveredFeature) return null;
     this.setState({
-      hoveredFeature,
       lngLat,
       x: offsetX,
       y: offsetY,
-      mapStyle: mapStyle.setIn(['layers', highlightLayerIndex, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid),
+      mapStyle: newMapStyle,
+      ...newState,
     });
   };
 
@@ -117,6 +130,22 @@ export default class extends Component {
         <div className="tooltip" style={{top: y, left: x}}>
           <p>
             {hoveredFeature.properties.tzid}
+          </p>
+        </div>
+      )
+    );
+  }
+
+  renderNeTooltip() {
+    const { x, y, neTimeZoneFeature, lngLat } = this.state;
+
+    if(!neTimeZoneFeature && !lngLat) return null;
+
+    return (
+      neTimeZoneFeature && (
+        <div className="tooltip" style={{top: y, left: x}}>
+          <p>
+            {neTimeZoneFeature.properties.time_zone}
           </p>
         </div>
       )
@@ -172,6 +201,7 @@ export default class extends Component {
         mapboxApiAccessToken={mapboxApiAccessToken}
       >
         {this._renderTooltip()}
+        {this.renderNeTooltip()}
         {/* {this.renderMaker()} */}
 
         <div className="navigationControlWrapper">
