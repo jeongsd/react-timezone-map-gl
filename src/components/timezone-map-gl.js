@@ -4,7 +4,6 @@ import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
-import { feature as topoFeature } from "topojson-client";
 import TimezoneMarkIcon from './TimezoneMarkIcon';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
@@ -12,8 +11,8 @@ import { withSource } from './context';
 const OVERLAYS_CLASSNAME = 'overlays';
 
 const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer.get('id') === id)
-const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
-const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
+// const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
+// const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
 const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
 
 const zoneKeys = Object.keys(momentTimezone.zones);
@@ -28,7 +27,7 @@ class TimezoneMapGL extends Component {
       viewport: {
         width: 1030,
         height: 750,
-        latitude: -20,
+        latitude: 0,
         longitude: 0,
         zoom: 1,
         bearing: 0,
@@ -74,7 +73,6 @@ class TimezoneMapGL extends Component {
     if(hoveredFeature) {
       newState.hoveredFeature = hoveredFeature;
       newState.neTimeZoneFeature = null;
-      // newMapStyle = newMapStyle.setIn(['layers', BOUNDARY_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
     } else if (neTimeZoneFeature) {
       newState.neTimeZoneFeature = neTimeZoneFeature;
       newState.hoveredFeature = null;

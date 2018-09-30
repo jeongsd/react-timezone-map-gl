@@ -8,17 +8,12 @@ import timezoneTopo from 'react-timezone-map-gl/data/timezoneTopo';
 import TimezoneSelect from '../components/TimezoneSelect'
 import '../../../src/index.css'
 
-// console.log(timezoneTopo)
 const styles = theme => ({
   root: {
     width: '100%',
     marginTop: theme.spacing.unit * 4,
-    // display: 'flex',
-    // justifyContent: 'center',
   },
   paper: {
-
-    // textAlign: 'center',
     margin: 'auto',
     marginTop: theme.spacing.unit * 7,
     width: '100%',
@@ -26,7 +21,6 @@ const styles = theme => ({
   },
 });
 
-const mapboxApiAccessToken = 'pk.eyJ1IjoiamVvbmdzZCIsImEiOiJjam1qcWxoY28wOTJmM3ZvZjBpbnB4aDNnIn0.kwjRZsFwP5Pqian_w5hA_Q';
 class Demo1 extends React.Component {
   state = {
     selectTimezone: null,
@@ -48,7 +42,6 @@ class Demo1 extends React.Component {
     return (
       <div className={classes.root}>
         <div>
-
           <TimezoneSelect
             value={selectTimezone}
             onChange={this.handleChange}
@@ -59,12 +52,12 @@ class Demo1 extends React.Component {
                 {({ size }) => (
                   <TimezoneMapGL
                     selectTimezone={selectTimezone && selectTimezone.value}
-                    mapboxApiAccessToken={mapboxApiAccessToken}
+                    mapboxApiAccessToken={process.env.MAPBOX_TOKEN}
                     onTimezoneClick={this.handleTimezoneClick}
                     defaultViewport={{
                       width: size.width,
                       height: size.width / 27 * 14,
-                      zoom: 1.5,
+                      zoom: 1.8,
                     }}
                   />
                 )}
