@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
+import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
 import momentTimezone from 'moment-timezone/data/meta/latest.json'
 import { feature as topoFeature } from "topojson-client";
 import TimezoneMarkIcon from './TimezoneMarkIcon';
@@ -10,7 +11,7 @@ import { withSource } from './context';
 
 const OVERLAYS_CLASSNAME = 'overlays';
 
-const findLayer = id => mapStyle => mapStyle.get('layers').findIndex(layer => layer.get('id') === id)
+const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer.get('id') === id)
 const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
 const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
 const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
@@ -54,9 +55,13 @@ class TimezoneMapGL extends Component {
   }
 
   _onHover = event => {
+    if(this.updating) {
+      return ;
+    }
     const { features, target, lngLat, srcEvent: { offsetX, offsetY }} = event;
     const { mapStyle } = this.state;
-    if (target.className !== OVERLAYS_CLASSNAME) return;
+    // console.log(target);
+    // if (target.className !== OVERLAYS_CLASSNAME) return;
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
     const neTimeZoneFeature = features && features.find(f => f.layer.id === 'timezone-fill');
@@ -65,19 +70,21 @@ class TimezoneMapGL extends Component {
     if(hoveredFeature) {
       newState.hoveredFeature = hoveredFeature;
       newState.neTimeZoneFeature = null;
-      newMapStyle = newMapStyle.setIn(['layers', BOUNDARY_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
+      // newMapStyle = newMapStyle.setIn(['layers', BOUNDARY_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], hoveredFeature.properties.tzid);
     } else if (neTimeZoneFeature) {
       newState.neTimeZoneFeature = neTimeZoneFeature;
       newState.hoveredFeature = null;
       newMapStyle = newMapStyle.setIn(['layers', FIND_NE_FILL_LAYER, 'paint', 'fill-opacity', 1, 1, 2], neTimeZoneFeature.properties.objectid);
     }
-
+    this.updating = true;
     this.setState({
       lngLat,
       x: offsetX,
       y: offsetY,
       mapStyle: newMapStyle,
       ...newState,
+    }, () => {
+      this.updating = false;
     });
   };
 
@@ -91,18 +98,45 @@ class TimezoneMapGL extends Component {
   }
 
   _renderTooltip() {
-    const { x, y, hoveredFeature, lngLat } = this.state;
-
+    const { x, y, hoveredFeature, lngLat, viewport } = this.state;
+    const { source } = this.props;
+    // console.log(hoveredFeature)
     if(!hoveredFeature && !lngLat) return null;
 
+    if(!hoveredFeature) return null;
+    const data = 
+      source.timezoneBoundaryBuilder.features.find(
+        feature => feature.properties.tzid === hoveredFeature.properties.tzid
+      )
+    
+    console.log(data)
+    const layer = new GeoJsonLayer({
+      id: 'geojson-layer',
+      data,
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      lineWidthScale: 20,
+      lineWidthMinPixels: 2,
+      getFillColor: [160, 160, 180, 200],
+      // getLineColor: d => colorToRGBArray(d.properties.color),
+      getRadius: 100,
+      getLineWidth: 1,
+      getElevation: 30,
+      // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
+    });
+
     return (
-      hoveredFeature && (
+      <React.Fragment>
+
+        <DeckGL {...viewport} layers={[layer]}/>
         <div className="tooltip" style={{top: y, left: x}}>
           <p>
             {hoveredFeature.properties.tzid}
           </p>
         </div>
-      )
+      </React.Fragment>
     );
   }
 
@@ -187,24 +221,26 @@ export default compose(
   defaultProps({
     defaultMapStyle: fromJS(MAP_STYLE)
   }),
-  withProps(({ source, defaultMapStyle }) => ({
-    defaultMapStyle: defaultMapStyle
-      .setIn(
-        ['sources', 'timezone-source'],
-        fromJS({
-          type: 'geojson',
-          data: topoFeature(source.naturalEarth, source.naturalEarth.objects.ne_10m_time_zones),
-        }),
-      )
-      .setIn(
-        ['sources', 'timezone-boundary-builder'],
-        fromJS({
-          type: 'geojson',
-          data: topoFeature(source.timezoneBoundaryBuilder, source.timezoneBoundaryBuilder.objects.combined_shapefile)
-        })
-      ),
-      // findBoundaryFillLayer,
-  }))
+  withProps(({ source, defaultMapStyle }) => {
+    return {
+      defaultMapStyle: defaultMapStyle
+        .setIn(
+          ['sources', 'timezone-source'],
+          fromJS({
+            type: 'geojson',
+            data: source.naturalEarth,
+          }),
+        )
+        .setIn(
+          ['sources', 'timezone-boundary-builder'],
+          fromJS({
+            type: 'geojson',
+            data: source.timezoneBoundaryBuilder
+          })
+        ),
+        // findBoundaryFillLayer,
+    };
+  })
 )(TimezoneMapGL)
 
 // ();
