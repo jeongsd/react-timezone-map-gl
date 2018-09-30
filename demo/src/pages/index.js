@@ -72,7 +72,7 @@ class Index extends React.Component {
 
         <div className={classes.sourceCode}>
           <Typography variant="display2" align="center" gutterBottom>
-            Source
+            Usage
           </Typography>
           <Paper className={classes.paper}>
             <SyntaxHighlighter language='jsx'>

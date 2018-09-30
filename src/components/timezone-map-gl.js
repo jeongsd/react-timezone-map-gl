@@ -3,19 +3,18 @@ import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
-import momentTimezone from 'moment-timezone/data/meta/latest.json'
+// import momentTimezone from 'moment-timezone/data/meta/latest.json'
+import { DateTime } from 'luxon';
 import TimezoneMarkIcon from './TimezoneMarkIcon';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
-
-const OVERLAYS_CLASSNAME = 'overlays';
 
 const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer.get('id') === id)
 // const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
 // const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
 const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
 
-const zoneKeys = Object.keys(momentTimezone.zones);
+// const zoneKeys = Object.keys(momentTimezone.zones);
 class TimezoneMapGL extends Component {
   constructor(props) {
     super(props);
@@ -103,9 +102,7 @@ class TimezoneMapGL extends Component {
     const { x, y, hoveredFeature, lngLat, viewport } = this.state;
     const { source } = this.props;
     // console.log(hoveredFeature)
-    if(!hoveredFeature && !lngLat) return null;
-
-    if(!hoveredFeature) return null;
+    if(!hoveredFeature || !lngLat) return null;
     const data =
       source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === hoveredFeature.properties.tzid
@@ -129,13 +126,33 @@ class TimezoneMapGL extends Component {
       // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
     });
 
+    const dt = DateTime.local().setZone(hoveredFeature.properties.tzid);
+              //=> 'America/New_York'
+    // dt.offset            //=> -240
+   //=> 'EDT'
+    //=> 'Eastern Daylight Time'
+
     return (
       <React.Fragment>
 
         <DeckGL {...viewport} layers={[layer]}/>
         <div className="tooltip" style={{top: y, left: x}}>
           <p>
-            {hoveredFeature.properties.tzid}
+            {dt.offsetNameLong} ({dt.offsetNameShort})
+          </p>
+          <p>
+            {dt.zoneName}
+          </p>
+          <p>
+            {DateTime.local().setZone(hoveredFeature.properties.tzid).toLocaleString({
+              // month: 'long', day: 'numeric'
+              // year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              // timeZoneName: 'short'
+            })}
           </p>
         </div>
       </React.Fragment>
@@ -145,13 +162,24 @@ class TimezoneMapGL extends Component {
   renderNeTooltip() {
     const { x, y, neTimeZoneFeature, lngLat } = this.state;
 
-    if(!neTimeZoneFeature && !lngLat) return null;
+    if(!neTimeZoneFeature || !lngLat) return null;
+    var dt = DateTime.local().setZone(neTimeZoneFeature.properties.time_zone)
 
     return (
       neTimeZoneFeature && (
         <div className="tooltip" style={{top: y, left: x}}>
           <p>
-            {neTimeZoneFeature.properties.time_zone}
+            {dt.zoneName}
+          </p>
+          <p>
+            {dt.toLocaleString({
+              // month: 'long', day: 'numeric'
+              // year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+            })}
           </p>
         </div>
       )
@@ -173,22 +201,6 @@ class TimezoneMapGL extends Component {
         <TimezoneMarkIcon />
       </Marker>
     );
-  }
-
-  renderTimezoneCities() {
-    return zoneKeys.map(zoneKey => {
-
-      const timezoneMeta = momentTimezone.zones[zoneKey];
-      return (
-        <Marker
-          key={zoneKey}
-          longitude={timezoneMeta.long}
-          latitude={timezoneMeta.lat}
-        >
-          {timezoneMeta.name}
-        </Marker>
-      )
-    });
   }
 
   renderSelectTimezone() {

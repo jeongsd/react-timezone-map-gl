@@ -23,7 +23,10 @@ const styles = theme => ({
 
 class Demo1 extends React.Component {
   state = {
-    selectTimezone: null,
+    selectTimezone: {
+      label: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      value: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   };
 
   handleChange = value => this.setState({ selectTimezone: value })
