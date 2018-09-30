@@ -23,7 +23,7 @@
             "case",
                 ["boolean", ["==", ["get", "objectid"], "placehodler_objectid"]],
                 1,
-                0.8
+                0.6
             ],
           "fill-color": {
             "property": "map_color8",
@@ -48,7 +48,7 @@
               "background-color": "#dddddd",
               "background-opacity": 0
           },
-          "interactive": true
+          "interactive": false
       },
       {
           "id": "water",
@@ -130,23 +130,6 @@
         },
         "interactive": true
       },
-      {
-        "id": "timezone-boundary-builder-select-fill",
-        "source": "timezone-boundary-builder",
-        "type": "fill",
-        "paint": {
-          "fill-outline-color": "#81452E",
-          "fill-color": "black",
-          "fill-opacity": [
-            "case",
-              ["boolean", ["==", ["get", "tzid"], "placehodler_tzid"]],
-                0.5,
-                0
-            ]
-        },
-        "interactive": true
-      },
-
       {
         "interactive": false,
         "minzoom": 5,

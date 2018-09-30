@@ -40,15 +40,15 @@ class TimezoneMapGL extends Component {
     this._renderTooltip = this._renderTooltip.bind(this);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const { mapStyle } = this.state;
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   const { mapStyle } = this.state;
 
-    if (prevProps.selectTimezone !== this.props.selectTimezone) {
-      this.setState({
-        mapStyle: mapStyle.setIn(['layers', BOUNDARY_SELECT_LAYER, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
-      });
-    }
-  }
+  //   if (prevProps.selectTimezone !== this.props.selectTimezone) {
+  //     this.setState({
+  //       mapStyle: mapStyle.setIn(['layers', BOUNDARY_SELECT_LAYER, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
+  //     });
+  //   }
+  // }
 
   _updateViewport = (viewport) => {
     this.setState({viewport});
@@ -64,7 +64,11 @@ class TimezoneMapGL extends Component {
     // if (target.className !== OVERLAYS_CLASSNAME) return;
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
-    const neTimeZoneFeature = features && features.find(f => f.layer.id === 'timezone-fill');
+    let neTimeZoneFeature
+    if (!hoveredFeature) {
+      neTimeZoneFeature = features && features.find(f => f.layer.id === 'timezone-fill');
+    }
+
     const newState = {};
     let newMapStyle = mapStyle;
     if(hoveredFeature) {
@@ -91,7 +95,7 @@ class TimezoneMapGL extends Component {
   handleClick = (event) => {
     const { onTimezoneClick } = this.props;
     const hoverFeature = event.features && event.features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
-
+    console.log('handleClick')
     if (onTimezoneClick && hoverFeature) {
       onTimezoneClick(event, hoverFeature.properties.tzid)
     }
@@ -104,12 +108,12 @@ class TimezoneMapGL extends Component {
     if(!hoveredFeature && !lngLat) return null;
 
     if(!hoveredFeature) return null;
-    const data = 
+    const data =
       source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === hoveredFeature.properties.tzid
       )
-    
-    console.log(data)
+
+    // console.log(data)
     const layer = new GeoJsonLayer({
       id: 'geojson-layer',
       data,
@@ -119,7 +123,7 @@ class TimezoneMapGL extends Component {
       extruded: true,
       lineWidthScale: 20,
       lineWidthMinPixels: 2,
-      getFillColor: [160, 160, 180, 200],
+      getFillColor: [129, 69, 46, 120],
       // getLineColor: d => colorToRGBArray(d.properties.color),
       getRadius: 100,
       getLineWidth: 1,
@@ -189,6 +193,42 @@ class TimezoneMapGL extends Component {
     });
   }
 
+  renderSelectTimezone() {
+    // const { x, y, hoveredFeature, lngLat, viewport } = this.state;
+    const { source, selectTimezone } = this.props;
+    const { mapStyle, viewport } = this.state;
+    // console.log(hoveredFeature)
+    // if(!hoveredFeature && !lngLat) return null;
+
+    // if(!hoveredFeature) return null;
+    const data =
+      source.timezoneBoundaryBuilder.features.find(
+        feature => feature.properties.tzid === selectTimezone
+      )
+
+    // console.log(data)
+    const layer = new GeoJsonLayer({
+      id: 'geojson-layer',
+      data,
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      lineWidthScale: 20,
+      lineWidthMinPixels: 2,
+      getFillColor: [0, 0, 0, 190],
+      // getLineColor: d => colorToRGBArray(d.properties.color),
+      getRadius: 100,
+      getLineWidth: 1,
+      getElevation: 30,
+      // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
+    });
+
+    return (
+      <DeckGL {...viewport} layers={[layer]}/>
+    );
+  }
+
   render() {
     const { mapboxApiAccessToken, selectTimezone } = this.props;
     const { mapStyle, viewport } = this.state;
@@ -197,16 +237,17 @@ class TimezoneMapGL extends Component {
       <MapGL
         { ...viewport }
         minZoom={1}
-        maxZoom={8}
+        maxZoom={6}
         mapStyle={mapStyle}
         onHover={this._onHover}
         onClick={this.handleClick}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={mapboxApiAccessToken}
+        doubleClickZoom={false}
       >
         {this._renderTooltip()}
         {this.renderNeTooltip()}
-        {/* {this.renderMaker()} */}
+        {this.renderSelectTimezone()}
 
         <div className="navigationControlWrapper">
           <NavigationControl onViewportChange={this._updateViewport} />
