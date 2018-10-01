@@ -1,13 +1,14 @@
 import React, {Component} from 'react'
+import styled from 'styled-components';
 import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
 // import momentTimezone from 'moment-timezone/data/meta/latest.json'
 import { DateTime } from 'luxon';
-import TimezoneMarkIcon from './TimezoneMarkIcon';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
+import time_zoneParser from '../utils/time_zoneParser';
 
 const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer.get('id') === id)
 // const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
@@ -15,6 +16,24 @@ const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer
 const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
 
 // const zoneKeys = Object.keys(momentTimezone.zones);
+
+const Tooltip = styled.div`
+  position: absolute;
+  padding: 4px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  /* max-width: 300px; */
+  font-size: 16px;
+  z-index: 10;
+  pointer-events: none;
+`;
+const NavigationControlWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+`;
+
 class TimezoneMapGL extends Component {
   constructor(props) {
     super(props);
@@ -127,16 +146,12 @@ class TimezoneMapGL extends Component {
     });
 
     const dt = DateTime.local().setZone(hoveredFeature.properties.tzid);
-              //=> 'America/New_York'
-    // dt.offset            //=> -240
-   //=> 'EDT'
-    //=> 'Eastern Daylight Time'
 
     return (
       <React.Fragment>
 
         <DeckGL {...viewport} layers={[layer]}/>
-        <div className="tooltip" style={{top: y, left: x}}>
+        <Tooltip style={{top: y, left: x}}>
           <p>
             {dt.offsetNameLong} ({dt.offsetNameShort})
           </p>
@@ -154,7 +169,7 @@ class TimezoneMapGL extends Component {
               // timeZoneName: 'short'
             })}
           </p>
-        </div>
+        </Tooltip>
       </React.Fragment>
     );
   }
@@ -163,48 +178,41 @@ class TimezoneMapGL extends Component {
     const { x, y, neTimeZoneFeature, lngLat } = this.state;
 
     if(!neTimeZoneFeature || !lngLat) return null;
-    var dt = DateTime.local().setZone(neTimeZoneFeature.properties.time_zone)
-
+    // console.log(neTimeZoneFeature.properties);
+    var dt = DateTime.local().setZone(time_zoneParser(neTimeZoneFeature.properties.time_zone), { keepLocalTime: false })
+    console.log(dt.toLocaleString({
+      // month: 'long', day: 'numeric'
+      // year: 'numeric',
+      timeZoneName: 'long',
+      // month: 'long',
+      // day: 'numeric',
+      // hour: 'numeric',
+      // minute: '2-digit',
+    }))
     return (
       neTimeZoneFeature && (
-        <div className="tooltip" style={{top: y, left: x}}>
+        <Tooltip style={{ top: y, left: x }}>
           <p>
-            {dt.zoneName}
+            {dt.offsetNameLong}{' '}
+            ({ dt.zoneName })
           </p>
           <p>
             {dt.toLocaleString({
               // month: 'long', day: 'numeric'
               // year: 'numeric',
+              // timeZoneName: 'long',
               month: 'long',
               day: 'numeric',
               hour: 'numeric',
               minute: '2-digit',
             })}
           </p>
-        </div>
+        </Tooltip>
       )
     );
   }
 
-  renderMaker() {
-    const { selectTimezone } = this.props;
-
-    const timezoneMeta = selectTimezone && momentTimezone.zones[selectTimezone];
-    if (!timezoneMeta) return null;
-    return (
-      <Marker
-        longitude={timezoneMeta.long}
-        latitude={timezoneMeta.lat}
-        offsetLeft={-10}
-        offsetTop={-13}
-      >
-        <TimezoneMarkIcon />
-      </Marker>
-    );
-  }
-
   renderSelectTimezone() {
-    // const { x, y, hoveredFeature, lngLat, viewport } = this.state;
     const { source, selectTimezone } = this.props;
     const { mapStyle, viewport } = this.state;
     // console.log(hoveredFeature)
@@ -240,7 +248,7 @@ class TimezoneMapGL extends Component {
   }
 
   render() {
-    const { mapboxApiAccessToken, selectTimezone } = this.props;
+    const { mapboxApiAccessToken } = this.props;
     const { mapStyle, viewport } = this.state;
 
     return (
@@ -259,9 +267,9 @@ class TimezoneMapGL extends Component {
         {this.renderNeTooltip()}
         {this.renderSelectTimezone()}
 
-        <div className="navigationControlWrapper">
+        <NavigationControlWrapper>
           <NavigationControl onViewportChange={this._updateViewport} />
-        </div>
+        </NavigationControlWrapper>
       </MapGL>
     );
   }

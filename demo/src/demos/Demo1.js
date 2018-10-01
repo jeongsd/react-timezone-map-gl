@@ -6,7 +6,6 @@ import { SizeMe } from 'react-sizeme'
 import TimezoneMapGL, { Provider } from 'react-timezone-map-gl'
 import timezoneTopo from 'react-timezone-map-gl/data/timezoneTopo';
 import TimezoneSelect from '../components/TimezoneSelect'
-import '../../../src/index.css'
 
 const styles = theme => ({
   root: {

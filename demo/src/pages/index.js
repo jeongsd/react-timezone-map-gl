@@ -4,12 +4,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-// import MDX from '@mdx-js/runtime'
-import withRoot from '../withRoot';
-import Demo1 from '../demos/Demo1';
 import reactTimezoneMapGLDemoString from '!raw-loader!../demos/ReactTimezoneMapGLDemo.js';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import withRoot from '../withRoot';
+import Demo1 from '../demos/Demo1';
 
 
 

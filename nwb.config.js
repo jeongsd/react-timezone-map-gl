@@ -15,6 +15,7 @@ module.exports = {
   },
   babel: {
     plugins: [
+      'styled-components',
       ['module-resolver', {
         'root': ['.'],
         'alias': {

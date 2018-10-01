@@ -14,12 +14,6 @@ import FormControl from '@material-ui/core/FormControl';
 import timezoneMeta from 'moment-timezone/data/meta/latest.json'
 import Select from 'react-select';
 
-// import VirtualList from 'react-virtual-list';
-// import VirtualList from 'react-tiny-virtual-list';
-
-import ReactMapGLTimezone from '../../../src'
-import '../../../src/index.css'
-
 const styles = theme => ({
   // root: {
   //   // textAlign: 'center',
