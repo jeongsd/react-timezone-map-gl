@@ -2,22 +2,17 @@ import React, {Component} from 'react'
 import styled from 'styled-components';
 import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
-import MapGL, { Marker, NavigationControl } from 'react-map-gl';
-import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
-// import momentTimezone from 'moment-timezone/data/meta/latest.json'
-import { DateTime, IANAZone } from 'luxon';
+import MapGL, { NavigationControl } from 'react-map-gl';
+import DeckGL, { GeoJsonLayer } from 'deck.gl';
+import { DateTime } from 'luxon';
 import { normalizeZone } from 'luxon/src/impl/zoneUtil';
-// /Users/jeongseongdae/Developer/github/jeongsd/react-timezone-map-gl/node_modules/.js
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
 import time_zoneParser from '../utils/time_zoneParser';
 
 const findLayer = id => fromJS(MAP_STYLE).get('layers').findIndex(layer => layer.get('id') === id)
-// const BOUNDARY_FILL_LAYER = findLayer('timezone-boundary-builder-fill');
-// const BOUNDARY_SELECT_LAYER = findLayer('timezone-boundary-builder-select-fill');
 const FIND_NE_FILL_LAYER = findLayer('timezone-fill');
 
-// const zoneKeys = Object.keys(momentTimezone.zones);
 
 const Tooltip = styled.div`
   position: absolute;
@@ -42,6 +37,7 @@ class TimezoneMapGL extends Component {
 
     this.state = {
       hoveredFeature: null,
+      neTimeZoneFeature: null,
       lngLat: null,
       mapStyle: this.props.defaultMapStyle,
       viewport: {
@@ -58,16 +54,6 @@ class TimezoneMapGL extends Component {
     this._onHover = this._onHover.bind(this);
     this._renderTooltip = this._renderTooltip.bind(this);
   }
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   const { mapStyle } = this.state;
-
-  //   if (prevProps.selectTimezone !== this.props.selectTimezone) {
-  //     this.setState({
-  //       mapStyle: mapStyle.setIn(['layers', BOUNDARY_SELECT_LAYER, 'paint', 'fill-opacity', 1, 1, 2], this.props.selectTimezone),
-  //     });
-  //   }
-  // }
 
   _updateViewport = (viewport) => {
     this.setState({viewport});
@@ -113,8 +99,10 @@ class TimezoneMapGL extends Component {
   handleClick = (event) => {
     const { onTimezoneClick } = this.props;
     const { hoveredFeature } = this.state;
-    if (onTimezoneClick && hoveredFeature) {
-      onTimezoneClick(event, hoveredFeature.properties.tzid)
+    const tzid = hoveredFeature && hoveredFeature.properties && hoveredFeature.properties.tzid
+
+    if (onTimezoneClick && tzid) {
+      onTimezoneClick(event, tzid);
     }
   }
 
@@ -160,13 +148,10 @@ class TimezoneMapGL extends Component {
           </p>
           <p>
             {DateTime.local().setZone(hoveredFeature.properties.tzid).toLocaleString({
-              // month: 'long', day: 'numeric'
-              // year: 'numeric',
               month: 'long',
               day: 'numeric',
               hour: 'numeric',
               minute: '2-digit',
-              // timeZoneName: 'short'
             })}
           </p>
         </Tooltip>
@@ -178,17 +163,7 @@ class TimezoneMapGL extends Component {
     const { x, y, neTimeZoneFeature, lngLat } = this.state;
 
     if(!neTimeZoneFeature || !lngLat) return null;
-    // console.log(neTimeZoneFeature.properties);
     var dt = DateTime.local().setZone(time_zoneParser(neTimeZoneFeature.properties.time_zone), { keepLocalTime: false })
-    // console.log(dt.toLocaleString({
-    //   // month: 'long', day: 'numeric'
-    //   // year: 'numeric',
-    //   timeZoneName: 'long',
-    //   // month: 'long',
-    //   // day: 'numeric',
-    //   // hour: 'numeric',
-    //   // minute: '2-digit',
-    // }))
     return (
       neTimeZoneFeature && (
         <Tooltip style={{ top: y, left: x }}>
@@ -198,9 +173,6 @@ class TimezoneMapGL extends Component {
           </p>
           <p>
             {dt.toLocaleString({
-              // month: 'long', day: 'numeric'
-              // year: 'numeric',
-              // timeZoneName: 'long',
               month: 'long',
               day: 'numeric',
               hour: 'numeric',
@@ -214,23 +186,21 @@ class TimezoneMapGL extends Component {
 
   renderSelectTimezone() {
     const { source, selectTimezone } = this.props;
-    const { mapStyle, viewport } = this.state;
-    // console.log(hoveredFeature)
-    // if(!hoveredFeature && !lngLat) return null;
+    const { viewport } = this.state;
+    if(!selectTimezone) return null;
 
-    // if(!hoveredFeature) return null;
-    if(selectTimezone) {
-      console.log(selectTimezone, normalizeZone(selectTimezone))
-    }
-
-    const data =
-      source.timezoneBoundaryBuilder.features.find(
+    const tz = normalizeZone(selectTimezone);
+    let data;
+    if (tz.type === 'iana') {
+      data = source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === selectTimezone
       )
+    } else {
+      return null;
+    }
 
-    // console.log(data)
     const layer = new GeoJsonLayer({
-      id: 'geojson-layer',
+      id: 'select-timezone-layer',
       data,
       pickable: true,
       stroked: false,
@@ -239,11 +209,9 @@ class TimezoneMapGL extends Component {
       lineWidthScale: 20,
       lineWidthMinPixels: 2,
       getFillColor: [0, 0, 0, 190],
-      // getLineColor: d => colorToRGBArray(d.properties.color),
       getRadius: 100,
       getLineWidth: 1,
       getElevation: 30,
-      // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
     });
 
     return (
@@ -263,8 +231,6 @@ class TimezoneMapGL extends Component {
           maxZoom={6}
           mapStyle={mapStyle}
           onHover={this._onHover}
-          // onClick={this.handleClick}
-
           onViewportChange={this._updateViewport}
           mapboxApiAccessToken={mapboxApiAccessToken}
           doubleClickZoom={false}
@@ -305,7 +271,6 @@ export default compose(
             data: source.timezoneBoundaryBuilder
           })
         ),
-        // findBoundaryFillLayer,
     };
   })
 )(TimezoneMapGL)
