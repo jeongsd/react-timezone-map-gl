@@ -5,7 +5,9 @@ import { fromJS } from 'immutable';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
 import DeckGL, { ArcLayer, GeoJsonLayer } from 'deck.gl';
 // import momentTimezone from 'moment-timezone/data/meta/latest.json'
-import { DateTime } from 'luxon';
+import { DateTime, IANAZone } from 'luxon';
+import { normalizeZone } from 'luxon/src/impl/zoneUtil';
+// /Users/jeongseongdae/Developer/github/jeongsd/react-timezone-map-gl/node_modules/.js
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
 import time_zoneParser from '../utils/time_zoneParser';
@@ -110,10 +112,9 @@ class TimezoneMapGL extends Component {
 
   handleClick = (event) => {
     const { onTimezoneClick } = this.props;
-    const hoverFeature = event.features && event.features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
-    console.log('handleClick')
-    if (onTimezoneClick && hoverFeature) {
-      onTimezoneClick(event, hoverFeature.properties.tzid)
+    const { hoveredFeature } = this.state;
+    if (onTimezoneClick && hoveredFeature) {
+      onTimezoneClick(event, hoveredFeature.properties.tzid)
     }
   }
 
@@ -144,7 +145,6 @@ class TimezoneMapGL extends Component {
       getElevation: 30,
       // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
     });
-
     const dt = DateTime.local().setZone(hoveredFeature.properties.tzid);
 
     return (
@@ -180,15 +180,15 @@ class TimezoneMapGL extends Component {
     if(!neTimeZoneFeature || !lngLat) return null;
     // console.log(neTimeZoneFeature.properties);
     var dt = DateTime.local().setZone(time_zoneParser(neTimeZoneFeature.properties.time_zone), { keepLocalTime: false })
-    console.log(dt.toLocaleString({
-      // month: 'long', day: 'numeric'
-      // year: 'numeric',
-      timeZoneName: 'long',
-      // month: 'long',
-      // day: 'numeric',
-      // hour: 'numeric',
-      // minute: '2-digit',
-    }))
+    // console.log(dt.toLocaleString({
+    //   // month: 'long', day: 'numeric'
+    //   // year: 'numeric',
+    //   timeZoneName: 'long',
+    //   // month: 'long',
+    //   // day: 'numeric',
+    //   // hour: 'numeric',
+    //   // minute: '2-digit',
+    // }))
     return (
       neTimeZoneFeature && (
         <Tooltip style={{ top: y, left: x }}>
@@ -219,6 +219,10 @@ class TimezoneMapGL extends Component {
     // if(!hoveredFeature && !lngLat) return null;
 
     // if(!hoveredFeature) return null;
+    if(selectTimezone) {
+      console.log(selectTimezone, normalizeZone(selectTimezone))
+    }
+
     const data =
       source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === selectTimezone
@@ -252,25 +256,29 @@ class TimezoneMapGL extends Component {
     const { mapStyle, viewport } = this.state;
 
     return (
-      <MapGL
-        { ...viewport }
-        minZoom={1}
-        maxZoom={6}
-        mapStyle={mapStyle}
-        onHover={this._onHover}
-        onClick={this.handleClick}
-        onViewportChange={this._updateViewport}
-        mapboxApiAccessToken={mapboxApiAccessToken}
-        doubleClickZoom={false}
-      >
-        {this._renderTooltip()}
-        {this.renderNeTooltip()}
-        {this.renderSelectTimezone()}
+      <div onClick={this.handleClick}>
+        <MapGL
+          { ...viewport }
+          minZoom={1}
+          maxZoom={6}
+          mapStyle={mapStyle}
+          onHover={this._onHover}
+          // onClick={this.handleClick}
 
-        <NavigationControlWrapper>
-          <NavigationControl onViewportChange={this._updateViewport} />
-        </NavigationControlWrapper>
-      </MapGL>
+          onViewportChange={this._updateViewport}
+          mapboxApiAccessToken={mapboxApiAccessToken}
+          doubleClickZoom={false}
+        >
+          {this._renderTooltip()}
+          {this.renderNeTooltip()}
+          {this.renderSelectTimezone()}
+
+          <NavigationControlWrapper>
+            <NavigationControl onViewportChange={this._updateViewport} />
+          </NavigationControlWrapper>
+        </MapGL>
+      </div>
+
     );
   }
 }

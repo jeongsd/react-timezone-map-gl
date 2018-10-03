@@ -32,35 +32,46 @@ const styles = theme => ({
 });
 
 
+
 const zoneKeys = Object.keys(timezoneMeta.zones).sort();
 
-const options = zoneKeys.map(zoneKey => {
+const timezoneOptions = zoneKeys.map(zoneKey => {
   const timezone = timezoneMeta.zones[zoneKey].name;
   return {
     label: timezone,
     value: timezone,
   };
 });
-// const options = [
-//   { value: 'chocolate', label: 'Chocolate' },
-//   { value: 'strawberry', label: 'Strawberry' },
-//   { value: 'vanilla', label: 'Vanilla' }
-// ]
-// const menuItems = zoneKeys.map(zoneKey => {
-//   const zone = timezoneMeta.zones[zoneKey];
-//   return <MenuItem key={zone.name} value={zone.name}>{zone.name}</MenuItem>
-// })
 
+// https://en.wikipedia.org/wiki/List_of_UTC_time_offsets
+// var headline = document.getElementsByClassName('mw-headline')
+// var result = []
 
-const formatGroupLabel = zoneKey => {
-  const zone = timezoneMeta.zones[zoneKey];
-  // console.log(zoneKey)
-  return (
-    <MenuItem key={zone.name} value={zone.name}>
-      {zone.name}
-    </MenuItem>
-  );
-}
+// for (let index = 0; index < headline.length; index++) {
+//   var element = headline[index];
+//   console.log(element)
+//   if(element.children[0]) {
+//     result.push(element.children[0].title)
+//   }
+
+// }
+
+// console.log(JSON.stringify(result))
+
+const fixedOffsets = [
+  "UTC−12:00","UTC−11:00","UTC−10:00","UTC−09:30","UTC−09:00","UTC−08:00","UTC−07:00","UTC−06:00","UTC−05:00","UTC−04:00","UTC−03:30","UTC−03:00","UTC−02:00","UTC−01:00","UTC±00:00","UTC+01:00","UTC+02:00","UTC+03:00","UTC+03:30","UTC+04:00","UTC+04:30","UTC+05:00","UTC+05:30","UTC+05:45","UTC+06:00","UTC+06:30","UTC+07:00","UTC+08:00","UTC+08:45","UTC+09:00","UTC+09:30","UTC+10:00","UTC+10:30","UTC+11:00","UTC+12:00","UTC+12:45","UTC+13:00","UTC+14:00"
+].map(offset => ({ label: offset, value: offset }))
+
+const groupedOptions = [
+  {
+    label: 'Fixed offset',
+    options: fixedOffsets,
+  },
+  {
+    label: 'IANA',
+    options: timezoneOptions,
+  },
+];
 
 class TimezoneSelect extends React.Component {
 
@@ -77,7 +88,7 @@ class TimezoneSelect extends React.Component {
         className={classes.root}
         onChange={onChange}
         value={value}
-        options={options}
+        options={groupedOptions}
       />
     );
   }
