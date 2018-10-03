@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-import { SizeMe } from 'react-sizeme'
-import TimezoneMapGL, { Provider } from 'react-timezone-map-gl'
-import timezoneTopo from 'react-timezone-map-gl/data/timezoneTopo';
-import TimezoneSelect from '../components/TimezoneSelect'
+import { SizeMe } from 'react-sizeme';
+import TimezoneMapGL, { Provider } from 'react-timezone-map-gl';
+import timezoneTopo from 'react-timezone-map-gl/data/timezoneTopo.json';
+import TimezoneSelect from '../components/TimezoneSelect';
 
 const styles = theme => ({
   root: {

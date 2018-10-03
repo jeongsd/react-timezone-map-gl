@@ -7,6 +7,10 @@ module.exports = {
     umd: false
   },
   webpack: {
+    // copy: [
+    //   // Copy directory contents to output
+    //   { from: 'src/data' }
+    // ],
     extra: {
       plugins: [
         new Dotenv()

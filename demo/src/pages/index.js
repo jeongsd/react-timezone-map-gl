@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -67,7 +66,6 @@ class Index extends React.Component {
           react-gl-map-timezone
         </Typography>
         <Demo1 />
-
 
         <div className={classes.sourceCode}>
           <Typography variant="display2" align="center" gutterBottom>

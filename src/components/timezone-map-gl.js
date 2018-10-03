@@ -4,8 +4,8 @@ import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
-import { DateTime } from 'luxon';
-import { normalizeZone } from 'luxon/src/impl/zoneUtil';
+import { DateTime, Info } from 'luxon';
+// import { normalizeZone } from 'luxon/src/impl/zoneUtil';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
 import time_zoneParser from '../utils/time_zoneParser';
@@ -19,7 +19,6 @@ const Tooltip = styled.div`
   padding: 4px 16px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  /* max-width: 300px; */
   font-size: 16px;
   z-index: 10;
   pointer-events: none;
@@ -65,8 +64,6 @@ class TimezoneMapGL extends Component {
     }
     const { features, target, lngLat, srcEvent: { offsetX, offsetY }} = event;
     const { mapStyle } = this.state;
-    // console.log(target);
-    // if (target.className !== OVERLAYS_CLASSNAME) return;
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
     let neTimeZoneFeature
@@ -109,14 +106,13 @@ class TimezoneMapGL extends Component {
   _renderTooltip() {
     const { x, y, hoveredFeature, lngLat, viewport } = this.state;
     const { source } = this.props;
-    // console.log(hoveredFeature)
+
     if(!hoveredFeature || !lngLat) return null;
     const data =
       source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === hoveredFeature.properties.tzid
       )
 
-    // console.log(data)
     const layer = new GeoJsonLayer({
       id: 'geojson-layer',
       data,
@@ -127,11 +123,9 @@ class TimezoneMapGL extends Component {
       lineWidthScale: 20,
       lineWidthMinPixels: 2,
       getFillColor: [129, 69, 46, 120],
-      // getLineColor: d => colorToRGBArray(d.properties.color),
       getRadius: 100,
       getLineWidth: 1,
       getElevation: 30,
-      // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
     });
     const dt = DateTime.local().setZone(hoveredFeature.properties.tzid);
 
@@ -189,9 +183,8 @@ class TimezoneMapGL extends Component {
     const { viewport } = this.state;
     if(!selectTimezone) return null;
 
-    const tz = normalizeZone(selectTimezone);
     let data;
-    if (tz.type === 'iana') {
+    if (Info.isValidIANAZone(selectTimezone)) {
       data = source.timezoneBoundaryBuilder.features.find(
         feature => feature.properties.tzid === selectTimezone
       )
@@ -274,5 +267,3 @@ export default compose(
     };
   })
 )(TimezoneMapGL)
-
-// ();

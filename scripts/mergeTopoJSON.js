@@ -3,7 +3,7 @@ const NE_JSON = require('../temp/natural-earth-data.json');
 const TBB_JSON = require('../temp/timezone-boundary-builder.json');
 const path = require('path')
 
-const TIMEZONE_TOPO_PATH = path.join(__dirname, '../data', 'timezoneTopo.json');
+const TIMEZONE_TOPO_PATH = path.join(__dirname, '../src/data', 'timezoneTopo.json');
 
 function mergeTopoJSON() {
   const obj = {
