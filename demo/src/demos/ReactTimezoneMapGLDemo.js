@@ -1,6 +1,7 @@
 import React from 'react';
 import TimezoneMapGL, { Provider } from 'react-timezone-map-gl'
 import timezoneTopoJSON from 'react-timezone-map-gl/data/timezoneTopo';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
 

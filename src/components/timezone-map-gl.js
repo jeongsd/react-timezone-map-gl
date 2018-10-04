@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { compose, withProps, defaultProps } from 'recompose';
 import { fromJS } from 'immutable';
 import MapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { DateTime, Info } from 'luxon';
-// import { normalizeZone } from 'luxon/src/impl/zoneUtil';
 import MAP_STYLE from './basic-v9.json';
 import { withSource } from './context';
 import time_zoneParser from '../utils/time_zoneParser';
@@ -39,30 +39,21 @@ class TimezoneMapGL extends Component {
       neTimeZoneFeature: null,
       lngLat: null,
       mapStyle: this.props.defaultMapStyle,
-      viewport: {
-        width: 1030,
-        height: 750,
-        latitude: 0,
-        longitude: 0,
-        zoom: 1,
-        bearing: 0,
-        pitch: 0,
-        ...this.props.defaultViewport,
-      },
+      viewport: this.props.defaultViewport,
     };
-    this._onHover = this._onHover.bind(this);
-    this._renderTooltip = this._renderTooltip.bind(this);
   }
 
-  _updateViewport = (viewport) => {
-    this.setState({viewport});
+  updateViewport = (viewport) => {
+    this.setState({ viewport });
   }
 
-  _onHover = event => {
+  handleMouseOut = () => this.setState({ hoveredFeature: null, neTimeZoneFeature: null, lngLat: null })
+
+  handleHover = event => {
     if(this.updating) {
       return ;
     }
-    const { features, target, lngLat, srcEvent: { offsetX, offsetY }} = event;
+    const { features, lngLat, srcEvent: { offsetX, offsetY }} = event;
     const { mapStyle } = this.state;
 
     const hoveredFeature = features && features.find(f => f.layer.id === 'timezone-boundary-builder-fill');
@@ -103,7 +94,7 @@ class TimezoneMapGL extends Component {
     }
   }
 
-  _renderTooltip() {
+  renderTooltip() {
     const { x, y, hoveredFeature, lngLat, viewport } = this.state;
     const { source } = this.props;
 
@@ -179,14 +170,14 @@ class TimezoneMapGL extends Component {
   }
 
   renderSelectTimezone() {
-    const { source, selectTimezone } = this.props;
+    const { source, timezone } = this.props;
     const { viewport } = this.state;
-    if(!selectTimezone) return null;
+    if(!timezone) return null;
 
     let data;
-    if (Info.isValidIANAZone(selectTimezone)) {
+    if (Info.isValidIANAZone(timezone)) {
       data = source.timezoneBoundaryBuilder.features.find(
-        feature => feature.properties.tzid === selectTimezone
+        feature => feature.properties.tzid === timezone
       )
     } else {
       return null;
@@ -217,28 +208,51 @@ class TimezoneMapGL extends Component {
     const { mapStyle, viewport } = this.state;
 
     return (
-      <div onClick={this.handleClick}>
+      <div
+        onClick={this.handleClick}
+        onMouseOut={this.handleMouseOut}
+      >
         <MapGL
           { ...viewport }
           minZoom={1}
           maxZoom={6}
           mapStyle={mapStyle}
-          onHover={this._onHover}
-          onViewportChange={this._updateViewport}
+          onHover={this.handleHover}
+          onViewportChange={this.updateViewport}
           mapboxApiAccessToken={mapboxApiAccessToken}
           doubleClickZoom={false}
         >
-          {this._renderTooltip()}
+          {this.renderTooltip()}
           {this.renderNeTooltip()}
           {this.renderSelectTimezone()}
-
           <NavigationControlWrapper>
-            <NavigationControl onViewportChange={this._updateViewport} />
+            <NavigationControl onViewportChange={this.updateViewport} />
           </NavigationControlWrapper>
         </MapGL>
       </div>
 
     );
+  }
+}
+
+TimezoneMapGL.propTypes = {
+  defaultMapStyle: PropTypes.object,
+  defaultViewport: PropTypes.object,
+  mapboxApiAccessToken: PropTypes.string.isRequired,
+  timezone: PropTypes.string,
+  onTimezoneClick: PropTypes.func,
+};
+
+TimezoneMapGL.defaultProps = {
+  timezone: null,
+  defaultViewport: {
+    width: 1030,
+    height: 750,
+    latitude: 0,
+    longitude: 0,
+    zoom: 1,
+    bearing: 0,
+    pitch: 0,
   }
 }
 

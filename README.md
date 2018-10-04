@@ -8,6 +8,7 @@ WIP
 
 Select timezone on the map for ReactJS with Mapbox GL JS, React Map GL.
 
+![react-timezone-map-gl](/react-timezone-map-gl.png)
 <!-- ### Installation
 
 #### npm
@@ -20,6 +21,32 @@ npm install --save react-timezone-map-gl mapbox-gl
 yarn add react-timezone-map-gl mapbox-gl
 ``` -->
 
+<!-- ### Components
+
+#### TimezoneMapGL
+
+##### defaultMapStyle `required`
+###### defaultValue
+basic-v9.json
+
+optional
+
+| Prop | Required | Default | Description |
+| ---- | :------: | ------- | ----------- |
+| **defaultMapStyle** | ✓ | basic-v9.json | Either a string or an `emoji` object |
+| **defaultViewport** |  |  | The emoji width and height. |
+| **mapboxApiAccessToken** | ✓ | null | Renders the native unicode emoji |
+| **timezone** | | null | Renders the native unicode emoji |
+| **onTimezoneClick** | | null | Renders the native unicode emoji |
+
+
+width: 1030,
+height: 750,
+latitude: 0,
+longitude: 0,
+zoom: 1,
+bearing: 0,
+pitch: 0, -->
 ## Goal
 
 https://www.cia.gov/library/publications/the-world-factbook/graphics/ref_maps/physical/pdf/standard_time_zones_of_the_world.pdf
