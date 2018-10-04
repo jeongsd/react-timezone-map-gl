@@ -32,7 +32,7 @@ class TimezoneSelect extends React.Component {
 
   render() {
     const { classes, onChange, value } = this.props;
-    // console.log(value)
+
     return (
       <Select
         className={classes.root}

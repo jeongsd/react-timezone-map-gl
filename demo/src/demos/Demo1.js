@@ -53,7 +53,7 @@ class Demo1 extends React.Component {
               <SizeMe>
                 {({ size }) => (
                   <TimezoneMapGL
-                    selectTimezone={selectTimezone && selectTimezone.value}
+                    timezone={selectTimezone && selectTimezone.value}
                     mapboxApiAccessToken={process.env.MAPBOX_TOKEN}
                     onTimezoneClick={this.handleTimezoneClick}
                     defaultViewport={{

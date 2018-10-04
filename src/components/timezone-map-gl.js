@@ -39,7 +39,16 @@ class TimezoneMapGL extends Component {
       neTimeZoneFeature: null,
       lngLat: null,
       mapStyle: this.props.defaultMapStyle,
-      viewport: this.props.defaultViewport,
+      viewport: {
+        width: 1030,
+        height: 750,
+        latitude: 0,
+        longitude: 0,
+        zoom: 1,
+        bearing: 0,
+        pitch: 0,
+        ...this.props.defaultViewport,
+      },
     };
   }
 

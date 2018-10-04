@@ -7,20 +7,20 @@ const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
 
 class ReactTimezoneMapGLDemo extends React.Component {
   state = {
-    selectTimezone: null,
+    timezone: null,
   };
 
   handleTimezoneClick = (event, timezoneName) => {
-    this.setState({ selectTimezone: timezoneName })
+    this.setState({ timezone: timezoneName })
   }
 
   render() {
-    const { selectTimezone } = this.state;
+    const { timezone } = this.state;
 
     return (
       <Provider value={timezoneTopoJSON}>
         <TimezoneMapGL
-          selectTimezone={selectTimezone}
+          timezone={timezone}
           mapboxApiAccessToken={MAPBOX_TOKEN}
           onTimezoneClick={this.handleTimezoneClick}
           defaultViewport={{
