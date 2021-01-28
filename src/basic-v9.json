@@ -1,0 +1,17 @@
+{
+  "version": 8,
+  "name": "Basic",
+  "metadata": {
+    "mapbox:autocomposite": true,
+    "mapbox:type": "template"
+  },
+  "sources": {
+    "mapbox": {
+      "url": "mapbox://mapbox.mapbox-streets-v7",
+      "type": "vector"
+    }
+  },
+  "sprite": "mapbox://sprites/mapbox/basic-v9",
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "layers": []
+}

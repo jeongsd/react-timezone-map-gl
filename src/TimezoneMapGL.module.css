@@ -1,0 +1,19 @@
+/* add css module styles here (optional) */
+
+.tooltip {
+  position: absolute;
+  padding: 4px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 16px;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.navigationControlWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
