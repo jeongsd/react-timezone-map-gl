@@ -9,10 +9,8 @@ import React, {
   useEffect
 } from 'react'
 // import { compose, withProps, defaultProps } from 'recompose'
-import { fromJS } from 'immutable'
 import MapGL, { NavigationControl, Source, Layer } from 'react-map-gl'
-import DeckGL, { GeoJsonLayer } from 'deck.gl'
-import { DateTime, Info } from 'luxon'
+import { DateTime } from 'luxon'
 import { feature as topoFeature } from 'topojson-client'
 import MAP_STYLE from './basic-v9.json'
 // import { withSource } from './context'
@@ -21,85 +19,41 @@ import styles from './TimezoneMapGL.module.css'
 import SelectTimeZoneLayer from './SelectTimeZoneLayer'
 import { dataLayers } from './map-style'
 
-const findLayer = (id) =>
-  fromJS(MAP_STYLE)
-    .get('layers')
-    .findIndex((layer) => layer.get('id') === id)
-
-const FIND_NE_FILL_LAYER = findLayer('timezone-fill')
-
-// compose(
-//   withSource,
-//   defaultProps({
-//     defaultMapStyle: MAP_STYLE
-//   }),
-//   withProps(({ source, defaultMapStyle }) => {
-//     let finalDefaultMapStyle = defaultMapStyle
-//     finalDefaultMapStyle['sources']['timezone-source'] = {
-//       type: 'geojson',
-//       data: source.naturalEarth
-//     }
-//     finalDefaultMapStyle['sources']['timezone-boundary-builder'] = {
-//       type: 'geojson',
-//       data: source.timezoneBoundaryBuilder
-//     }
-//     return {
-//       defaultMapStyle: finalDefaultMapStyle
-//     }
-//   })
-// )()
-
-// TimezoneMapGL.propTypes = {
-//   defaultMapStyle: PropTypes.object,
-//   defaultViewport: PropTypes.object,
-//   mapboxApiAccessToken: PropTypes.string.isRequired,
-//   timezone: PropTypes.string,
-//   onTimezoneClick: PropTypes.func
-// }
-
-// TimezoneMapGL.defaultProps = {
-//   timezone: null,
-//   defaultViewport: {
-//     width: 1030,
-//     height: 750,
-//     latitude: 0,
-//     longitude: 0,
-//     zoom: 1,
-//     bearing: 0,
-//     pitch: 0
-//   }
-// }
-
 interface TimezoneMapGLProps {
   defaultMapStyle?: any
   defaultViewport?: any
   source?: any
   mapboxApiAccessToken: string
   timezone?: string
-  onTimezoneClick?: () => void
+  onTimezoneClick?: (timezone: string) => void
 }
 
 const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
-  const { defaultMapStyle = MAP_STYLE, source: sourceProp, timezone } = props
+  const {
+    onTimezoneClick,
+    defaultMapStyle = MAP_STYLE,
+    source: sourceProp,
+    timezone
+  } = props
 
   //   import { feature as topoFeature } from "topojson-client";
 
   const sourceRef = useRef(sourceProp)
   const [state, setState] = useState<any>({
-    hoveredFeature: null,
-    neTimeZoneFeature: null,
     lngLat: null
     // mapStyle: null
   })
 
-  const [mapStyle, setMapStyle] = useState<any>(null)
+  const [mapStyle, setMapStyle] = useState<any>(MAP_STYLE)
   const [timeZoneFillFeatureId, setTimeZoneFillFeatureId] = useState<
     string | null
   >(null)
+  const [hoveredFeatureTzid, setHoveredFeatureTzid] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
     if (sourceProp?.naturalEarth) {
-      console.log('asjdkladjkd')
       sourceRef.current = sourceProp
       sourceRef.current = {
         naturalEarth: topoFeature(
@@ -111,48 +65,33 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
           sourceRef.current.timezoneBoundaryBuilder.objects.combined_shapefile
         )
       }
+
       setMapStyle((preStyle) => {
         const nextStyle = preStyle ? { ...preStyle } : { ...MAP_STYLE }
-        nextStyle.sources['timezone-source'] = {
-          type: 'geojson',
-          data: sourceRef.current.naturalEarth
-        }
-        // @ts-ignore
-        nextStyle.sources['timezone-boundary-builder'] = {
-          type: 'geojson',
-          data: sourceRef.current.timezoneBoundaryBuilder
-        }
-        return nextStyle
+        // nextStyle.sources['timezone-source'] = {
+        //   type: 'geojson',
+        //   data: sourceRef.current.naturalEarth
+        // }
+        // // @ts-ignore
+        // nextStyle.sources['timezone-boundary-builder'] = {
+        //   type: 'geojson',
+        //   data: sourceRef.current.timezoneBoundaryBuilder
+        // }
+        console.log(preStyle)
+        return { ...preStyle }
       })
-      // mapStyle
     }
-    // MAP_STYLE
-    // return {
-    //   naturalEarth: ,
-    //   timezoneBoundaryBuilder:
-    // }
   }, [!!sourceProp?.naturalEarth])
 
   const selectTimezoneData = useMemo(() => {
-    console.log('useMemo')
     return sourceRef?.current?.timezoneBoundaryBuilder?.features?.find?.(
       (feature) => feature.properties.tzid === timezone
     )
   }, [timezone, !!sourceRef?.current])
 
-  const { hoveredFeature, lngLat } = state
-  const hoverTimezoneData = useMemo(() => {
-    if (hoveredFeature && lngLat) {
-      const data = sourceRef.current?.timezoneBoundaryBuilder?.features?.find?.(
-        (feature) => feature.properties.tzid === hoveredFeature.properties.tzid
-      )
-      return data
-    }
-  }, [!!hoveredFeature, !!lngLat])
-
-  //   hoveredFeature
-  // lngLat
-  // console.log(selectTimezoneData)
+  const hoverTimezoneData = sourceRef.current?.timezoneBoundaryBuilder?.features?.find?.(
+    (feature) => feature.properties.tzid === hoveredFeatureTzid
+  )
 
   const [viewport, setViewport] = useState({
     width: 1030,
@@ -169,78 +108,54 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
     setViewport(nextViewport)
   }, [])
 
-  const handleMouseOut = () =>
-    setState((prev) =>
-      Object.assign({}, prev, {
-        hoveredFeature: null,
-        neTimeZoneFeature: null,
-        lngLat: null
-      })
-    )
+  const handleMouseOut = () => {
+    setTimeZoneFillFeatureId(null)
+    setHoveredFeatureTzid(null)
+  }
+
   const handleHover = useDebounceCallback((event) => {
     const {
       features,
-      lngLat,
       srcEvent: { offsetX, offsetY }
     } = event
 
-    // consolee.log(features)
+    const hoveredFeature = features?.find?.(
+      (f) => f.layer.id === 'timezone-boundary-builder-fill'
+    )
+    console.log(hoveredFeature)
 
-    // console.log('asd??')
-    // console.log(performance.now())
-    const hoveredFeature =
-      features &&
-      features.find((f) => f.layer.id === 'timezone-boundary-builder-fill')
-    // console.log(performance.now())
-    let neTimeZoneFeature
-    if (!hoveredFeature) {
-      neTimeZoneFeature =
-        features && features.find((f) => f.layer.id === 'timezone-fill')
+    if (hoveredFeature?.properties?.tzid) {
+      setHoveredFeatureTzid(hoveredFeature.properties.tzid)
+      setTimeZoneFillFeatureId(null)
+    } else {
+      const neTimeZoneFeature = features?.find?.(
+        (f) => f.layer.id === 'timezone-fill'
+      )
+      console.log(neTimeZoneFeature.properties.objectid)
+      if (neTimeZoneFeature?.properties?.objectid) {
+        setTimeZoneFillFeatureId(neTimeZoneFeature.properties.objectid)
+        setHoveredFeatureTzid(null)
+      }
     }
-
-    if (neTimeZoneFeature?.properties?.objectid) {
-      setTimeZoneFillFeatureId(neTimeZoneFeature.properties.objectid)
-    }
-    console.log()
-    // console.log(performance.now())
-    // const newState: any = {}
-    // const newMapStyle = { ...mapStyle }
-    // // console.log(performance.now())
-    // if (hoveredFeature) {
-    //   newState.hoveredFeature = hoveredFeature
-    //   newState.neTimeZoneFeature = null
-    // } else if (neTimeZoneFeature) {
-    //   newState.neTimeZoneFeature = neTimeZoneFeature
-    //   newState.hoveredFeature = null
-    //   newMapStyle.layers[FIND_NE_FILL_LAYER].paint['fill-opacity'][1][1][2] =
-    //
-    //   // setMapStyle(newMapStyle)
-    // }
 
     setState({
-      lngLat,
       x: offsetX,
       y: offsetY
-      // mapStyle: newMapStyle,
-      // ...newState
     })
   }, 2)
 
   const handleClick = (event) => {
-    const { onTimezoneClick } = props
-    const { hoveredFeature } = state
-    // const tzid = hoveredFeature?.properties?.tzid
-
-    // if (onTimezoneClick && tzid) {
-    //   onTimezoneClick(event, tzid)
-    // }
+    if (hoveredFeatureTzid) {
+      // eslint-disable-next-line no-unused-expressions
+      onTimezoneClick?.(hoveredFeatureTzid)
+    }
   }
 
   const renderTooltip = () => {
-    const { x, y, hoveredFeature, lngLat } = state
-    if (!hoveredFeature || !lngLat) return null
+    const { x, y } = state
+    if (!hoveredFeatureTzid) return null
 
-    const dt = DateTime.local().setZone(hoveredFeature.properties.tzid)
+    const dt = DateTime.local().setZone(hoveredFeatureTzid)
 
     return (
       <div className={styles.tooltip} style={{ top: y, left: x }}>
@@ -249,14 +164,12 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
         </p>
         <p>{dt.zoneName}</p>
         <p>
-          {DateTime.local()
-            .setZone(hoveredFeature.properties.tzid)
-            .toLocaleString({
-              month: 'long',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit'
-            })}
+          {DateTime.local().setZone(hoveredFeatureTzid).toLocaleString({
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+          })}
         </p>
       </div>
     )
@@ -265,8 +178,6 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
   const renderNeTooltip = () => {
     const { x, y, neTimeZoneFeature, lngLat } = state
 
-    console.log(sourceRef?.current?.naturalEarth, timeZoneFillFeatureId)
-
     const feature = sourceRef?.current?.naturalEarth?.features?.find?.(
       (feature) => feature?.properties?.objectid === timeZoneFillFeatureId
     )
@@ -274,7 +185,7 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
     // const data = sourceRef.current?.timezoneBoundaryBuilder?.features?.find?.(
     //   (feature) => feature.properties.tzid === hoveredFeature.properties.tzid
     // )
-    if (!lngLat || !feature) return null
+    if (!feature) return null
 
     var dt = DateTime.local().setZone(
       timezoneParser(feature.properties.time_zone as string),
@@ -302,69 +213,12 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
     )
   }
 
-  const renderSelectOrHoveredTimezone = () => {
-    // const { source, timezone } = props
-    const { hoveredFeature, lngLat } = state
+  const { mapboxApiAccessToken } = props
 
-    const layers = []
-    if (timezone && Info.isValidIANAZone(timezone)) {
-      const data = sourceRef.current.timezoneBoundaryBuilder.features.find(
-        (feature) => feature.properties.tzid === timezone
-      )
-      layers.push(
-        // @ts-ignore
-        new GeoJsonLayer({
-          id: 'select-timezone-layer',
-          data,
-          pickable: true,
-          stroked: false,
-          filled: true,
-          extruded: true,
-          lineWidthScale: 20,
-          lineWidthMinPixels: 2,
-          getFillColor: [255, 255, 255, 150],
-          getRadius: 100,
-          getLineWidth: 1,
-          getElevation: 30
-        } as any)
-      )
-    }
-
-    if (hoveredFeature && lngLat) {
-      const data = sourceRef.current?.timezoneBoundaryBuilder?.features?.find?.(
-        (feature) => feature.properties.tzid === hoveredFeature.properties.tzid
-      )
-      if (data) {
-        console.log('data', data)
-        layers.push(
-          // @ts-ignore
-          new GeoJsonLayer({
-            id: 'geojson-layer',
-            data,
-            pickable: true,
-            stroked: false,
-            filled: true,
-            extruded: true,
-            lineWidthScale: 20,
-            lineWidthMinPixels: 2,
-            getFillColor: [129, 69, 46, 120],
-            getRadius: 100,
-            getLineWidth: 1,
-            getElevation: 30
-          })
-        )
-      }
-    }
-
-    return <DeckGL {...viewport} layers={layers} />
+  if (!sourceRef?.current?.naturalEarth) {
+    return null
   }
 
-  const { mapboxApiAccessToken } = props
-  // const { mapStyle } = state
-  // console.log('asddads', mapStyle)
-
-  // console.log(sourceRef?.current?.naturalEarth)
-  // sourceRef.current.naturalEarth
   return (
     <div onClick={handleClick} onMouseOut={handleMouseOut}>
       {mapStyle ? (
@@ -372,7 +226,7 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
           {...viewport}
           minZoom={1}
           maxZoom={6}
-          mapStyle={mapStyle}
+          mapStyle={MAP_STYLE}
           // mapStyle='mapbox://styles/mapbox/light-v10'
           // mapStyle='mapbox://styles/mapbox/light-v9'
           onHover={handleHover}
@@ -382,11 +236,13 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
           // scrollZoom={false}
         >
           {/* dataLayers */}
-
-          <Source type='geojson' data={sourceRef?.current?.naturalEarth}>
+          <Source
+            type='geojson'
+            data={sourceRef?.current?.naturalEarth}
+            // key={!!sourceRef?.current?.naturalEarth}
+          >
             <Layer
               id='timezone-fill'
-              source='timezone-source'
               type='fill'
               paint={{
                 'fill-opacity': [
@@ -416,27 +272,89 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
               // interactive
             />
           </Source>
+          {/* {sourceRef?.current?.naturalEarth && (
+            <Source
+              id='timezone-source'
+              type='geojson'
+              data={sourceRef?.current?.naturalEarth}
+            ></Source>
+          )} */}
+          {/* {
+        "id": "timezone-line",
+        "source": "timezone-source",
+        "type": "line",
+        "paint": {
+          "line-color": "#81452E"
+        },
+        "interactive": false
+      },
+      {
+       
+        "interactive": true
+      }, */}
 
           {dataLayers.map((dataLayer) => (
             <Layer key={dataLayer.id} {...dataLayer} />
           ))}
+          <Source
+            type='geojson'
+            data={sourceRef?.current?.naturalEarth}
+            // id='test'
+          >
+            <Layer
+              // id='timezone-line'
+              // source='test'
+              type='line'
+              paint={{
+                'line-color': '#81452E',
+                'line-width': {
+                  base: 1,
+                  stops: [
+                    [3, 0.5],
+                    [22, 15]
+                  ]
+                }
+              }}
+            />
+          </Source>
+          <Source
+            type='geojson'
+            data={sourceRef?.current?.timezoneBoundaryBuilder}
+          >
+            <Layer
+              id='timezone-boundary-builder-fill'
+              // source='timezone-boundary-builder'
+              type='fill'
+              paint={{
+                'fill-outline-color': '#81452E',
+                'fill-color': 'red',
+                'fill-opacity': 0
+              }}
+            />
+          </Source>
 
-          {/* dataLayers */}
-          {/* {renderSelectOrHoveredTimezone()} */}
           <SelectTimeZoneLayer selectTimezoneData={selectTimezoneData} />
+          {hoveredFeatureTzid && (
+            <Source
+              key={hoveredFeatureTzid}
+              type='geojson'
+              data={hoverTimezoneData}
+            >
+              <Layer
+                {...{
+                  // id: 'data',
+                  type: 'fill',
+                  paint: {
+                    'fill-color': 'black',
+                    'fill-opacity': 0.8
+                  }
+                }}
+              />
+            </Source>
+          )}
 
           {renderTooltip()}
           {renderNeTooltip()}
-
-          {/* {hoverTimezoneData && (
-            <Source type='geojson' data={hoverTimezoneData}>
-              <Layer
-                id='data'
-                type='fill'
-                paint={{ 'fill-color': '#00ffff' }}
-              />
-            </Source>
-          )} */}
 
           <div className={styles.navigationControlWrapper}>
             <NavigationControl onViewportChange={handleViewportChange} />
