@@ -41,17 +41,15 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
   const sourceRef = useRef(sourceProp)
   const [state, setState] = useState<any>({
     lngLat: null
-    // mapStyle: null
   })
 
-  const [mapStyle, setMapStyle] = useState<any>(MAP_STYLE)
+  const [loading, setLoading] = useState(true)
   const [timeZoneFillFeatureId, setTimeZoneFillFeatureId] = useState<
     string | null
   >(null)
   const [hoveredFeatureTzid, setHoveredFeatureTzid] = useState<string | null>(
     null
   )
-
   useEffect(() => {
     if (sourceProp?.naturalEarth) {
       sourceRef.current = sourceProp
@@ -65,21 +63,7 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
           sourceRef.current.timezoneBoundaryBuilder.objects.combined_shapefile
         )
       }
-
-      setMapStyle((preStyle) => {
-        const nextStyle = preStyle ? { ...preStyle } : { ...MAP_STYLE }
-        // nextStyle.sources['timezone-source'] = {
-        //   type: 'geojson',
-        //   data: sourceRef.current.naturalEarth
-        // }
-        // // @ts-ignore
-        // nextStyle.sources['timezone-boundary-builder'] = {
-        //   type: 'geojson',
-        //   data: sourceRef.current.timezoneBoundaryBuilder
-        // }
-        console.log(preStyle)
-        return { ...preStyle }
-      })
+      setLoading(false)
     }
   }, [!!sourceProp?.naturalEarth])
 
@@ -122,7 +106,6 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
     const hoveredFeature = features?.find?.(
       (f) => f.layer.id === 'timezone-boundary-builder-fill'
     )
-    console.log(hoveredFeature)
 
     if (hoveredFeature?.properties?.tzid) {
       setHoveredFeatureTzid(hoveredFeature.properties.tzid)
@@ -131,17 +114,13 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
       const neTimeZoneFeature = features?.find?.(
         (f) => f.layer.id === 'timezone-fill'
       )
-      console.log(neTimeZoneFeature.properties.objectid)
       if (neTimeZoneFeature?.properties?.objectid) {
         setTimeZoneFillFeatureId(neTimeZoneFeature.properties.objectid)
         setHoveredFeatureTzid(null)
       }
     }
 
-    setState({
-      x: offsetX,
-      y: offsetY
-    })
+    setState({ x: offsetX, y: offsetY })
   }, 2)
 
   const handleClick = (event) => {
@@ -176,15 +155,11 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
   }
 
   const renderNeTooltip = () => {
-    const { x, y, neTimeZoneFeature, lngLat } = state
+    const { x, y } = state
 
     const feature = sourceRef?.current?.naturalEarth?.features?.find?.(
       (feature) => feature?.properties?.objectid === timeZoneFillFeatureId
     )
-
-    // const data = sourceRef.current?.timezoneBoundaryBuilder?.features?.find?.(
-    //   (feature) => feature.properties.tzid === hoveredFeature.properties.tzid
-    // )
     if (!feature) return null
 
     var dt = DateTime.local().setZone(
@@ -221,7 +196,7 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
 
   return (
     <div onClick={handleClick} onMouseOut={handleMouseOut}>
-      {mapStyle ? (
+      {!loading ? (
         <MapGL
           {...viewport}
           minZoom={1}
@@ -268,30 +243,8 @@ const TimezoneMapGL: FC<TimezoneMapGLProps> = (props) => {
                   ]
                 }
               }}
-
-              // interactive
             />
           </Source>
-          {/* {sourceRef?.current?.naturalEarth && (
-            <Source
-              id='timezone-source'
-              type='geojson'
-              data={sourceRef?.current?.naturalEarth}
-            ></Source>
-          )} */}
-          {/* {
-        "id": "timezone-line",
-        "source": "timezone-source",
-        "type": "line",
-        "paint": {
-          "line-color": "#81452E"
-        },
-        "interactive": false
-      },
-      {
-       
-        "interactive": true
-      }, */}
 
           {dataLayers.map((dataLayer) => (
             <Layer key={dataLayer.id} {...dataLayer} />

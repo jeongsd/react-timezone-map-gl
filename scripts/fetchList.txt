@@ -1,0 +1,7 @@
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.README.html
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.VERSION.txt
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.cpg
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.dbf
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.prj
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.shp
+https://github.com/nvkelso/natural-earth-vector/raw/master/10m_cultural/ne_10m_time_zones.shx
