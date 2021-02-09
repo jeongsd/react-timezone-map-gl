@@ -78,6 +78,7 @@
     "@react-hook/debounce": "^3.0.0",
     "luxon": "^1.25.0",
     "react-map-gl": "^6.0.3",
+    "timezone-support": "^2.0.2",
     "topojson-client": "^3.1.0"
   }
 }
